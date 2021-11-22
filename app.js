@@ -1,7 +1,8 @@
-import dotenv from "dotenv";
+import dotenv from "dotenv/config";
 import createError from "http-errors";
 import express from "express";
 import path from "path";
+import fileUpload from "express-fileupload";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
 import cors from "cors";
@@ -9,12 +10,17 @@ import cors from "cors";
 import "./db/connection.js";
 
 const app = express();
-dotenv.config();
+// dotenv.config();
 
 import userRoute from "./routes/api/users.js";
 
 // view engine setup
-
+app.use(
+  fileUpload({
+    useTempFiles: true,
+    tempFileDir: "/tmp/",
+  })
+);
 app.use(cors());
 app.use(logger("dev"));
 app.use(express.json());

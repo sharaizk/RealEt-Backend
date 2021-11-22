@@ -4,19 +4,21 @@ import jwt from "jsonwebtoken";
 let userSchema = mongoose.Schema({
   name: {
     type: String,
+    unique: true,
   },
   phoneNumber: {
     type: Number,
+    unique: true,
+  },
+  userImage: {
+    type: String,
+    required: true,
   },
   password: {
     type: String,
     required: true,
   },
   confirmPassword: {
-    type: String,
-    required: true,
-  },
-  userImage: {
     type: String,
     required: true,
   },

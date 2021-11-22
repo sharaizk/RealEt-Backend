@@ -13,6 +13,7 @@ cloudinary.config({
   api_secret: process.env.APISECRET,
 });
 
+//Get All Users
 router.get("/", async (req, res) => {
   try {
     let users = await UserModel.find();

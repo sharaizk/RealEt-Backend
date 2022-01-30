@@ -22,7 +22,7 @@ const userSchema = new Schema(
       default: "Consumer",
     },
   },
-  { timestamps: true, toJSON: true, toObject: true }
+  { timestamps: true, toJSON: true, toObject: true, bufferTimeoutMS: 20000 }
 );
 
 userSchema.pre("save", async function (next) {

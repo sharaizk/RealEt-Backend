@@ -38,6 +38,7 @@ export const userLogin = async (req, res) => {
 /*
  * @param req : Request
  * @param res : Response
+ * @param next : Next
  * User Signup Function : Creates new instance of User in database
  */
 export const userSignup = async (req, res, next) => {
@@ -60,6 +61,11 @@ export const userSignup = async (req, res, next) => {
   next();
 };
 
+/*
+ * @param req : Request
+ * @param res : Response
+ * Signup Function : Creates new instance of Each respective role in database
+ */
 export const roleSignup = async (req, res) => {
   try {
     const { role, _id } = req?.user;

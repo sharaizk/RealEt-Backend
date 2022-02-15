@@ -2,7 +2,11 @@ import { NextFunction, Request, Response } from "express";
 import isEmail from "validator/lib/isEmail";
 import roles from "../../config/roles";
 import { User } from "../../models";
-import { findUser, userExists } from "../../validators/auth.validator";
+import {
+  findUser,
+  isPhoneNumber,
+  userExists,
+} from "../../validators/auth.validator";
 import { randomOTP } from "../../utils/otp";
 import { sendConfirmEmail } from "../../libraries/sendMail";
 import sendVerificationCode from "../../libraries/sendMessage";
@@ -17,14 +21,14 @@ export const userLogin = async (req, res) => {
     const type = isEmail(login, { domain_specific_validation: true })
       ? "email"
       : "phoneNumber";
-    const user = await findUser({ [type]: login });
+    const user = await findUser(type, login);
     if (!user) {
       return res
         .status(404)
         .json({ message: "User Not exists, please Signup First" });
     }
     if (!(await user?.comparePassword(password))) {
-      res.status(401).json({
+      return res.status(401).json({
         status: "Unauthorized",
         message: `${[type]}/Password does not match`,
       });
@@ -47,7 +51,9 @@ export const userLogin = async (req, res) => {
  */
 export const userSignup = async (req, res, next) => {
   try {
-    const { fullName, login, type, password, role = "Consumer" } = req?.body;
+    const { fullName, login, password, role = "Consumer" } = req?.body;
+    const type =
+      (isPhoneNumber(login) && "phoneNumber") || (isEmail(login) && "email");
     if (await userExists(type, login)) {
       return res
         .status(400)

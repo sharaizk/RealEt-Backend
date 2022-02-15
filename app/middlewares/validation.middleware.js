@@ -9,7 +9,7 @@ import { isPhoneNumber } from "../validators/auth.validator";
  */
 export const validateAuth = async (req, res, next) => {
   try {
-    const { login, password, type, fullName } = req.body;
+    const { login, password, fullName } = req.body;
     /**
      * Parsing End Point of the Request URL
      * @const
@@ -19,7 +19,6 @@ export const validateAuth = async (req, res, next) => {
     const errors = [];
     switch (URL) {
       case "signup":
-        type || errors.push("Login Type not Defined");
         fullName || errors.push("Please Enter Your Full Name");
       case "login":
       case "signup":

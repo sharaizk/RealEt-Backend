@@ -2,6 +2,7 @@ import { Schema, Types, model } from "mongoose";
 
 const agentSchema = new Schema(
   {
+    userId: { type: Types.ObjectId, ref: "User" },
     officeName: { type: String },
     officeCoordinates: {
       longitude: { type: Number },

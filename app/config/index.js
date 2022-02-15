@@ -10,4 +10,7 @@ export default {
   secretAccessKey: process.env.AWS_SECRET_KEY,
   region: process.env.AWS_BUCKET_REGION,
   AWSBucket: process.env.AWS_BUCKET_NAME,
+  TWILIO_NUMBER: process.env.TWILIO_NUMBER,
+  TWILIO_AUTH_TOKEN: process.env.TWILIO_AUTH_TOKEN,
+  TWILIO_ACCOUNT_SID: process.env.TWILIO_ACCOUNT_SID,
 };

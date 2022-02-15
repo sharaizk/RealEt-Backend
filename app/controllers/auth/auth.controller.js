@@ -1,8 +1,11 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import isEmail from "validator/lib/isEmail";
 import roles from "../../config/roles";
 import { User } from "../../models";
 import { findUser, userExists } from "../../validators/auth.validator";
+import { randomOTP } from "../../utils/otp";
+import { sendConfirmEmail } from "../../libraries/sendMail";
+import sendVerificationCode from "../../libraries/sendMessage";
 /**
  * This Function allows User to login To his respective Dashboard based on Role
  * @param {Request} req - request object
@@ -40,7 +43,7 @@ export const userLogin = async (req, res) => {
  * Creates new instance of User in database
  * @param {Request} req - request object
  * @param {Response} res - response object
- * @param {Response} res - response object
+ * @param {NextFunction} next - Next Function
  */
 export const userSignup = async (req, res, next) => {
   try {
@@ -76,5 +79,38 @@ export const roleSignup = async (req, res) => {
   } catch (error) {
     User.findOneAndDelete({ _id: req?.user?._id });
     res.status(400).json({ message: error.message });
+  }
+};
+
+/**
+ * Generates a OTP and sends to user for resetting password
+ * @param {Request} req - request object
+ * @param {Response} res - response object
+ */
+
+export const forgotPassword = async (req, res) => {
+  try {
+    const { loginType, login } = req.body;
+    const OTP = await randomOTP();
+    switch (loginType) {
+      case "email":
+        await sendConfirmEmail({
+          email: login,
+          subject: "Reset Password",
+          text: `The OTP for your reset password is ${OTP}`,
+        });
+        break;
+      case "phoneNumber":
+        await sendVerificationCode(login, OTP);
+        break;
+      default:
+        break;
+    }
+    await User.findOneAndUpdate({ [loginType]: login }, { $set: { otp: OTP } });
+    res.status(200).json({
+      message: `OTP successfully sent to ${login}`,
+    });
+  } catch (error) {
+    res.status(401).json({ message: error.message });
   }
 };

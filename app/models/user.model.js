@@ -21,6 +21,7 @@ const userSchema = new Schema(
       enum: ["Consumer", "Agent", "Builder", "Admin"],
       default: "Consumer",
     },
+    otp: { type: Number },
   },
   { timestamps: true, bufferTimeoutMS: 20000 }
 );

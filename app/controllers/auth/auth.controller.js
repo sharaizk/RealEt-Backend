@@ -44,7 +44,7 @@ export const userLogin = async (req, res) => {
  */
 export const userSignup = async (req, res, next) => {
   try {
-    const { fullName, login, type, password } = req?.body;
+    const { fullName, login, type, password, role = "Consumer" } = req?.body;
     if (await userExists(type, login)) {
       return res
         .status(400)
@@ -54,6 +54,7 @@ export const userSignup = async (req, res, next) => {
       fullName,
       [type]: login,
       password,
+      role,
     });
     req.user = user;
     next();

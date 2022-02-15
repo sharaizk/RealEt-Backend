@@ -5,7 +5,6 @@ import {
   userLogin,
   userSignup,
 } from "../controllers/auth/auth.controller";
-import { generateOTP } from "../middlewares";
 import {
   validateAuth,
   validateLoginType,

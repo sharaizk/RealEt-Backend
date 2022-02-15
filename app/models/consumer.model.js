@@ -10,7 +10,7 @@ const consumerSchema = new Schema(
       latitude: { type: Number },
     },
   },
-  { timestamps: true, toJSON: true, toObject: true }
+  { timestamps: true }
 );
 
 const Consumer = model("Consumer", consumerSchema);

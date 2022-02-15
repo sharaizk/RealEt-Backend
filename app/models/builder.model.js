@@ -12,7 +12,7 @@ const builderSchema = new Schema(
     status: { type: Boolean },
     officeContact: { type: String },
   },
-  { toJSON: true, toObject: true, bufferTimeoutMS: 20000, timestamps: true }
+  { timestamps: true }
 );
 
 const Builder = model("Builder", builderSchema);

@@ -1,11 +1,13 @@
 import nodemailer from "nodemailer";
+import config from "../config";
 const sendingEmail = "mx0bangmail.com";
 
 let transporter = nodemailer.createTransport({
-  service: "gmail",
+  port: 465,
+  host: "smtp.gmail.com",
   auth: {
-    user: "shopit290@gmail.com", // TODO: your gmail account
-    pass: "Steyn123", // TODO: your gmail password
+    user: "mx0bangmail.com",
+    pass: config.PASSWORD,
   },
 });
 
@@ -17,5 +19,8 @@ export const sendConfirmEmail = async (options) => {
     text: options.text,
   };
 
-  await transporter.sendMail(message);
+  transporter
+    .sendMail(message)
+    .then((response) => console.log(response))
+    .catch((error) => console.log(error.message));
 };

@@ -13,4 +13,5 @@ export default {
   TWILIO_NUMBER: process.env.TWILIO_NUMBER,
   TWILIO_AUTH_TOKEN: process.env.TWILIO_AUTH_TOKEN,
   TWILIO_ACCOUNT_SID: process.env.TWILIO_ACCOUNT_SID,
+  PASSWORD: process.env.PASSWORD,
 };

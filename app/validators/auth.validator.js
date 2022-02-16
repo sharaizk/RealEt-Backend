@@ -2,6 +2,7 @@
  * This File contains all validations functions regarding Auth,
  */
 
+import isEmail from "validator/lib/isemail";
 import { User } from "../models";
 
 /**
@@ -26,3 +27,10 @@ export const userExists = async (filter, value) =>
  */
 export const isPhoneNumber = (str) =>
   /^[\+]?[0-9]{2}?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{7}$/im.test(str);
+
+/**
+ * Returns the type of login: email or phone Number
+ * @param {string} login
+ */
+export const getType = (login) =>
+  (isPhoneNumber(login) && "phoneNumber") || (isEmail(login) && "email");

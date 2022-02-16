@@ -1,16 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import isEmail from "validator/lib/isEmail";
 import roles from "../../config/roles";
-import { User } from "../../models";
-import {
-  findUser,
-  isPhoneNumber,
-  userExists,
-} from "../../validators/auth.validator";
-import { randomOTP } from "../../utils/otp";
 import { sendConfirmEmail } from "../../libraries/sendMail";
 import sendVerificationCode from "../../libraries/sendMessage";
-import { Document, Model } from "mongoose";
+import { User } from "../../models";
+import { randomOTP } from "../../utils";
+import { findUser, getType, userExists } from "../../validators/auth.validator";
 /**
  * This Function allows User to login To his respective Dashboard based on Role
  * @param {Request} req - request object
@@ -19,10 +13,7 @@ import { Document, Model } from "mongoose";
 export const userLogin = async (req, res) => {
   try {
     const { password, login } = req?.body;
-    const type = isEmail(login, { domain_specific_validation: true })
-      ? "email"
-      : "phoneNumber";
-    const user = await findUser(type, login);
+    const user = await findUser(getType(login), login);
     if (!user) {
       return res
         .status(404)
@@ -31,7 +22,7 @@ export const userLogin = async (req, res) => {
     if (!(await user?.comparePassword(password))) {
       return res.status(401).json({
         status: "Unauthorized",
-        message: `${[type]}/Password does not match`,
+        message: `${[getType(login)]}/Password does not match`,
       });
     }
     res.status(200).json({
@@ -53,8 +44,7 @@ export const userLogin = async (req, res) => {
 export const userSignup = async (req, res, next) => {
   try {
     const { fullName, login, password, role = "Consumer" } = req?.body;
-    const type =
-      (isPhoneNumber(login) && "phoneNumber") || (isEmail(login) && "email");
+    const type = getType(login);
     if (await userExists(type, login)) {
       return res
         .status(400)
@@ -66,6 +56,8 @@ export const userSignup = async (req, res, next) => {
       password,
       role,
     });
+    user.otp = { code: await randomOTP(), status: false };
+    user.save();
     req.user = user;
     next();
   } catch (error) {
@@ -130,27 +122,23 @@ export const forgotPassword = async (req, res) => {
  * Verifies OTP entered by user
  * @param {Request} req - request object
  * @param {Response} res - response object
- * @param {NextFunction} next - Next Function
  */
 
-export const verifyOTP = async (req, res, next) => {
+export const verifyOTP = async (req, res) => {
   try {
     const { login, loginType, otp } = req.body;
-    /**
-     * @const user
-     * @type {Document}
-     */
     const user = await User.findOne({
       $and: [{ [loginType]: login }, { "otp.code": otp }],
     });
     if (!user) {
-      return res.status(401).json({ message: "OTP not valid" });
+      return res.status(401).json({ message: "OTP not valid", status: false });
     }
-    user.update(
+    await User.findOneAndUpdate(
+      { _id: user._id },
       { $unset: { "otp.code": "" }, $set: { "otp.status": true } },
       { new: true }
     );
-    next();
+    res.status(200).json({ message: "OTP Verified", status: true });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -165,10 +153,13 @@ export const resetPassword = async (req, res) => {
   try {
     const { password, login, loginType } = req.body;
     const user = await User.findOneAndUpdate(
-      { [loginType]: login },
+      { $and: [{ [loginType]: login }, { "otp.status": true }] },
       { $unset: { otp: "" } },
       { new: true }
     );
+    if (!user) {
+      return res.status(400).json({ message: "OTP not Verified" });
+    }
     user.password = password;
     await user.save();
     res.status(200).json({ message: "Password Reset Done, Login to continue" });

@@ -7,14 +7,11 @@ const sendVerificationCode = async (to, code) => {
   const twilioNumber = config.TWILIO_NUMBER; // Your Auth Token from www.twilio.com
 
   const client = new twilio(accountSid, authToken);
-  client.messages
-    .create({
-      body: `Your RealEt Password Reset OTP is : ${code}`,
-      to, // Text this number
-      from: twilioNumber, // From a valid BUY Twilio number
-    })
-    .then((message) => console.log(message.sid))
-    .catch((err) => console.log(err));
+  await client.messages.create({
+    body: `Your RealEt Password Reset OTP is : ${code}`,
+    to, // Text this number
+    from: twilioNumber, // From a valid BUY Twilio number
+  });
 };
 
 export default sendVerificationCode;

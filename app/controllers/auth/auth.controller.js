@@ -1,9 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import roles from "../../config/roles";
-import { sendConfirmEmail } from "../../libraries/sendMail";
-import sendVerificationCode from "../../libraries/sendMessage";
 import { User } from "../../models";
-import { randomOTP } from "../../utils";
+import { randomOTP, sendOTP } from "../../utils";
 import { findUser, getType, userExists } from "../../validators/auth.validator";
 /**
  * This Function allows User to login To his respective Dashboard based on Role
@@ -58,6 +56,11 @@ export const userSignup = async (req, res, next) => {
     });
     user.otp = { code: await randomOTP(), status: false };
     user.save();
+    await sendOTP(type, login, OTP, {
+      email: login,
+      subject: "Confirm Email",
+      text: `The OTP for your Email confirmation is ${OTP}`,
+    });
     req.user = user;
     next();
   } catch (error) {
@@ -91,20 +94,11 @@ export const forgotPassword = async (req, res) => {
   try {
     const { loginType, login } = req.body;
     const OTP = await randomOTP();
-    switch (loginType) {
-      case "email":
-        await sendConfirmEmail({
-          email: login,
-          subject: "Reset Password",
-          text: `The OTP for your reset password is ${OTP}`,
-        });
-        break;
-      case "phoneNumber":
-        await sendVerificationCode(login, OTP);
-        break;
-      default:
-        break;
-    }
+    await sendOTP(loginType, login, OTP, {
+      email: login,
+      subject: "Reset Password",
+      text: `The OTP for your reset password is ${OTP}`,
+    });
     await User.findOneAndUpdate(
       { [loginType]: login },
       { $set: { "otp.code": OTP, "otp.status": false } }

@@ -6,7 +6,7 @@ let transporter = nodemailer.createTransport({
   port: 465,
   host: "smtp.gmail.com",
   auth: {
-    user: "mx0bangmail.com",
+    user: "mx0ban@gmail.com",
     pass: config.PASSWORD,
   },
 });
@@ -19,8 +19,5 @@ export const sendConfirmEmail = async (options) => {
     text: options.text,
   };
 
-  transporter
-    .sendMail(message)
-    .then((response) => console.log(response))
-    .catch((error) => console.log(error.message));
+  await transporter.sendMail(message);
 };

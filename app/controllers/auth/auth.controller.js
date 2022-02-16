@@ -10,6 +10,7 @@ import {
 import { randomOTP } from "../../utils/otp";
 import { sendConfirmEmail } from "../../libraries/sendMail";
 import sendVerificationCode from "../../libraries/sendMessage";
+import { Document, Model } from "mongoose";
 /**
  * This Function allows User to login To his respective Dashboard based on Role
  * @param {Request} req - request object
@@ -112,11 +113,66 @@ export const forgotPassword = async (req, res) => {
       default:
         break;
     }
-    await User.findOneAndUpdate({ [loginType]: login }, { $set: { otp: OTP } });
+    await User.findOneAndUpdate(
+      { [loginType]: login },
+      { $set: { "otp.code": OTP, "otp.status": false } }
+    );
+
     res.status(200).json({
       message: `OTP successfully sent to ${login}`,
     });
   } catch (error) {
     res.status(401).json({ message: error.message });
+  }
+};
+
+/**
+ * Verifies OTP entered by user
+ * @param {Request} req - request object
+ * @param {Response} res - response object
+ * @param {NextFunction} next - Next Function
+ */
+
+export const verifyOTP = async (req, res, next) => {
+  try {
+    const { login, loginType, otp } = req.body;
+    /**
+     * @const user
+     * @type {Document}
+     */
+    const user = await User.findOne({
+      $and: [{ [loginType]: login }, { "otp.code": otp }],
+    });
+    if (!user) {
+      return res.status(401).json({ message: "OTP not valid" });
+    }
+    user.update(
+      { $unset: { "otp.code": "" }, $set: { "otp.status": true } },
+      { new: true }
+    );
+    next();
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+/**
+ * Sets New password for the user
+ * @param {Request} req - request object
+ * @param {Response} res - response object
+ */
+export const resetPassword = async (req, res) => {
+  try {
+    const { password, login, loginType } = req.body;
+    const user = await User.findOneAndUpdate(
+      { [loginType]: login },
+      { $unset: { otp: "" } },
+      { new: true }
+    );
+    user.password = password;
+    await user.save();
+    res.status(200).json({ message: "Password Reset Done, Login to continue" });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
   }
 };

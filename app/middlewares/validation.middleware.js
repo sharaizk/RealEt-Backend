@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import isEmail from "validator/lib/isemail";
-import { isPhoneNumber } from "../validators/auth.validator";
+import { isPhoneNumber, userExists } from "../validators/auth.validator";
 /**
  * Validates data sent from frontend
  * @param {Request} req - request object
@@ -55,4 +55,20 @@ export const validateLoginType = async (req, res, next) => {
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
+};
+
+/**
+ * Validates data sent from frontend
+ * @param {Request} req - request object
+ * @param {Response} res - response object
+ * @param {NextFunction} next - Next Function
+ */
+
+export const findUser = async (req, res, next) => {
+  const user = await userExists(req.body.loginType, req.body.login);
+  if (!user)
+    return res
+      .status(400)
+      .json({ message: `User Not found on this ${req.body.loginType}` });
+  next();
 };

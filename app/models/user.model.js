@@ -21,7 +21,7 @@ const userSchema = new Schema(
       enum: ["Consumer", "Agent", "Builder", "Admin"],
       default: "Consumer",
     },
-    otp: { type: Number },
+    otp: { status: { type: String, default: null }, code: { type: Number } },
   },
   { timestamps: true, bufferTimeoutMS: 20000 }
 );
@@ -32,7 +32,6 @@ userSchema.pre("save", async function (next) {
   }
   this.password = await hash(this.password, 10);
 });
-
 // Compare user password
 userSchema.methods.comparePassword = async function (enteredPassword) {
   return await compare(enteredPassword, this.password);

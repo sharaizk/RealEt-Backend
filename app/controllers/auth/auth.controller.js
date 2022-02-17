@@ -54,8 +54,10 @@ export const userSignup = async (req, res, next) => {
       password,
       role,
     });
-    user.otp = { code: await randomOTP(), status: false };
+    const OTP = await randomOTP();
+    user.otp = { code: OTP, status: false };
     user.save();
+
     await sendOTP(type, login, OTP, {
       email: login,
       subject: "Confirm Email",

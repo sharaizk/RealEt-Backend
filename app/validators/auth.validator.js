@@ -26,7 +26,7 @@ export const userExists = async (filter, value) =>
  * @param {string} str - string to check that it is valid phone number or not
  */
 export const isPhoneNumber = (str) =>
-  /^[\+]?[0-9]{2}?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{7}$/im.test(str);
+  /^[\+]?[92]{2}?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{7}$/im.test(str);
 
 /**
  * Returns the type of login: email or phone Number

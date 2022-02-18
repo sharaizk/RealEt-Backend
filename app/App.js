@@ -14,8 +14,7 @@ middlewares(app);
 app.use("/api", apiRouter);
 
 // Connecting To Database and Running Express Server
-app.listen(config.PORT, (err) => {
-  if (err) console.log(`${err.message}`, err);
+app.listen(config.PORT, () => {
   console.log("✓", `Listening on port ${config.PORT}`);
 });
 database();

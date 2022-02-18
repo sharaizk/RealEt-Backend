@@ -83,7 +83,7 @@ export const roleSignup = async (req, res) => {
   try {
     const { role, _id } = req?.user;
     roles[role].create({ userId: _id });
-    res.status(200).json({ message: "Signed Up" });
+    res.status(200).json({ message: "User signed up successfully, an account verification otp has been sent to you" });
   } catch (error) {
     User.findOneAndDelete({ _id: req?.user?._id });
     res.status(400).json({ message: error.message });
@@ -126,7 +126,8 @@ export const forgotPassword = async (req, res) => {
 
 export const verifyOTP = async (req, res) => {
   try {
-    const { login, loginType, otp } = req.body;
+    const { login, otp } = req.body;
+    const loginType = getType(login);
     const user = await User.findOne({
       $and: [{ [loginType]: login }, { "otp.code": otp }],
     });

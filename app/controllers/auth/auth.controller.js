@@ -11,7 +11,7 @@ import { findUser, getType, userExists } from "../../validators/auth.validator";
 export const userLogin = async (req, res) => {
   try {
     const { password, login } = req?.body;
-    const user = await findUser(getType(login), login);
+    const user = await findUser(getType(login), new RegExp(login,'i'));
     if (!user) {
       return res
         .status(404)
@@ -128,8 +128,9 @@ export const verifyOTP = async (req, res) => {
   try {
     const { login, otp } = req.body;
     const loginType = getType(login);
+    // NOW ITS NOT CASE SENSITIVE
     const user = await User.findOne({
-      $and: [{ [loginType]: login }, { "otp.code": otp }],
+      $and: [{ [loginType]: new RegExp(login,'i') }, { "otp.code": otp }],
     });
     if (!user) {
       return res.status(401).json({ message: "OTP not valid", status: false });

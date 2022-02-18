@@ -20,7 +20,7 @@ export const findUser = async (filter, value) =>
  *   @return Boolean
  */
 export const userExists = async (filter, value) =>
-  User.exists({ [filter]: value });
+  User.exists({ [filter]: new RegExp(value,'i') });
 
 /**
  * @param {string} str - string to check that it is valid phone number or not

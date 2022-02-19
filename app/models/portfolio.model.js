@@ -2,9 +2,10 @@ import { Schema, Types, model } from "mongoose";
 
 const portfolioScheme = new Schema(
   {
-    builderId: { type: Types.ObjectId, ref: "User" },
+    userId: { type: Types.ObjectId, ref: "User" },
     title: { type: String, required: [true, "Title is required"] },
     description: { type: String },
+    photos: [{ type: String }],
     info: {
       coords: { longitude: { type: Number }, latitude: { type: Number } },
       societyName: {
@@ -15,7 +16,7 @@ const portfolioScheme = new Schema(
       province: { type: String },
       size: { type: String },
     },
-    photos: [{ type: String }],
+    deleteFlag: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

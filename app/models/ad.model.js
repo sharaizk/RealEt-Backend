@@ -2,7 +2,7 @@ import { Schema, Types, model } from "mongoose";
 
 const adSchema = new Schema(
   {
-    adId: { type: Types.ObjectId, ref: "User" },
+    userId: { type: Types.ObjectId, ref: "User" },
     title: { type: String, required: [true, "Title is required"] },
     photos: [{ type: String }],
     virtualTour: [{}],
@@ -19,6 +19,8 @@ const adSchema = new Schema(
       province: { type: String, required: [true, "Province is required"] },
       size: { type: String, required: [true, "Property Size is required"] },
       unit: { type: String, required: [true, "Unit is required"] },
+      deleteFlag: { type: Boolean, default: false },
+      featuredFlag: { type: Boolean, default: false },
     },
   },
   { timestamps: true }

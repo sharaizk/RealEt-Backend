@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { Ad } from "../models";
-import { uploadPhoto, getFileStream } from "../libraries/multer";
+import { uploadPhoto, getURL } from "../libraries/multer";
 import fs from "fs";
 import { promisify } from "util";
 
@@ -16,16 +16,12 @@ export const postAd = async (req, res) => {
   try {
     const file = req.files;
     const { title, description, type, info } = req.body;
-
     let photos = [];
-
     for (let i = 0; i < file.length; i++) {
       const result = await uploadPhoto(file[i]);
-      photos.push(`${req.protocol}://${req.get("host")}/images/${result.key}`);
-
+      photos.push(result.Location);
       await unlinkFile(file[i].path);
     }
-
     const ad = await Ad.create({
       title,
       photos,
@@ -34,7 +30,6 @@ export const postAd = async (req, res) => {
       info,
     });
     ad.save();
-
     return res.status(200).json({
       message: "Ad Posted Successfully",
     });

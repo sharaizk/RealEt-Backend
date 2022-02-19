@@ -33,7 +33,7 @@ export default multer({
   }),
 });
 
-export function uploadPhoto(file) {
+export const uploadPhoto = (file) => {
   const fileStream = fs.createReadStream(file.path);
 
   const uploadParams = {
@@ -42,4 +42,4 @@ export function uploadPhoto(file) {
     Key: file.filename + "-" + file.originalname,
   };
   return s3.upload(uploadParams).promise();
-}
+};

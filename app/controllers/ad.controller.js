@@ -14,8 +14,8 @@ const unlinkFile = promisify(fs.unlink);
 
 export const postAd = async (req, res) => {
   try {
-    const file = req.files;
-    const { title, description, type, info } = req.body;
+    const file = req?.files;
+    const { title, description, type, info } = req?.body;
     let photos = [];
     for (let i = 0; i < file.length; i++) {
       const result = await uploadPhoto(file[i]);
@@ -34,7 +34,98 @@ export const postAd = async (req, res) => {
       message: "Ad Posted Successfully",
     });
   } catch (error) {
-    console.log("error");
     return res.status(404).json({ message: error.message });
+  }
+};
+
+/**
+ * This Function allows User to get his Ads
+ * @param {Request} req - request object
+ * @param {Response} res - response object
+ */
+export const getAdByUserId = async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    const ad = await Ad.findById({ userId });
+    console.log(ad);
+  } catch (error) {
+    return res.status(404).json({ message: error.message });
+  }
+};
+
+/**
+ * This Function allows User remove his ad
+ * @param {Request} req - request object
+ * @param {Response} res - response object
+ */
+export const removeAd = async (req, res) => {
+  try {
+    const _id = req.params.id;
+    await Ad.findByIdAndUpdate(_id, { deleteFlag: true });
+    return res.status(200).json({
+      message: "Ad Deleted Successfully!",
+    });
+  } catch (error) {
+    return res.status(404).json({
+      message: error.message,
+    });
+  }
+};
+
+/**
+ * This Function allows User Feature His Property
+ * @param {Request} req - request object
+ * @param {Response} res - response object
+ */
+export const featureProperty = async (req, res) => {
+  try {
+    const _id = req.params.id;
+    await Ad.findByIdAndUpdate(_id, { featuredFlag: true });
+    return res.status(200).json({
+      message: "Ad Featured Successfully!",
+    });
+  } catch (error) {
+    return res.status(404).json({
+      message: error.message,
+    });
+  }
+};
+
+/**
+ * This Function allows User Get All Ads
+ * @param {Request} req - request object
+ * @param {Response} res - response object
+ */
+export const getAllAds = async (req, res) => {
+  try {
+    let ads = await Ad.find();
+    return res.status(200).json({
+      Ads: ads,
+    });
+  } catch (error) {
+    return res.status(404).json({
+      message: error.message,
+    });
+  }
+};
+
+/**
+ * This Function allows User to Edit Ad
+ * @param {Request} req - request object
+ * @param {Response} res - response object
+ */
+export const editAd = async (req, res) => {
+  try {
+    const _id = req.params.id;
+
+    await Ad.findByIdAndUpdate(_id, req?.body);
+    return res.status(200).json({
+      message: "Ad Update Successfully!",
+    });
+  } catch (error) {
+    return res.status(404).json({
+      message: error.message,
+    });
   }
 };

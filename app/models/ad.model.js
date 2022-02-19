@@ -17,12 +17,12 @@ const adSchema = new Schema(
       },
       size: { type: String, required: [true, "Property Size is required"] },
       unit: { type: String, required: [true, "Unit is required"] },
-      deleteFlag: { type: Boolean, default: false },
-      featuredFlag: { type: Boolean, default: false },
     },
     city: { type: Number, ref: "City" },
     province: { type: Number, ref: "Province" },
     location: { type: Number, ref: "Location" },
+    deleteFlag: { type: Boolean, default: false },
+    featuredFlag: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

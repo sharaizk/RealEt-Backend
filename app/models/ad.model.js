@@ -21,6 +21,8 @@ const adSchema = new Schema(
     city: { type: Number, ref: "City" },
     province: { type: Number, ref: "Province" },
     location: { type: Number, ref: "Location" },
+    deleteFlag: { type: Boolean, default: false },
+    featuredFlag: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

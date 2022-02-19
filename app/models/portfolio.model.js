@@ -11,10 +11,10 @@ const portfolioScheme = new Schema(
         type: String,
         required: [true, "Society Name is required"],
       },
-      city: { type: String },
-      province: { type: String },
-      size: { type: String },
     },
+    city: { type: Number, ref: "City" },
+    province: { type: Number, ref: "Province" },
+    location: { type: Number, ref: "Location" },
     photos: [{ type: String }],
   },
   { timestamps: true }

@@ -10,6 +10,7 @@ import {
 
 import multer from "multer";
 import { agentOrConsumer } from "../middlewares/roles.middleware";
+import { userAuth } from "../middlewares/auth.middleware";
 
 const upload = multer({ dest: "uploads/" });
 

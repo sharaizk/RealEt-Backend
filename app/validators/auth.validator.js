@@ -2,7 +2,7 @@
  * This File contains all validations functions regarding Auth,
  */
 
-import isEmail from "validator/lib/isemail";
+import validator from "validator";
 import { User } from "../models";
 
 /**
@@ -20,7 +20,7 @@ export const findUser = async (filter, value) =>
  *   @return Boolean
  */
 export const userExists = async (filter, value) =>
-  User.exists({ [filter]: new RegExp(value,'i') });
+  User.exists({ [filter]: new RegExp(value, "i") });
 
 /**
  * @param {string} str - string to check that it is valid phone number or not
@@ -33,4 +33,5 @@ export const isPhoneNumber = (str) =>
  * @param {string} login
  */
 export const getType = (login) =>
-  (isPhoneNumber(login) && "phoneNumber") || (isEmail(login) && "email");
+  (isPhoneNumber(login) && "phoneNumber") ||
+  (validator.isEmail(login) && "email");

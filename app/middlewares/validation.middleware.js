@@ -1,6 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import isEmail from "validator/lib/isemail";
-import { isPhoneNumber, userExists } from "../validators/auth.validator";
+import {
+  isPhoneNumber,
+  userExists,
+  getType,
+} from "../validators/auth.validator";
 /**
  * Validates data sent from frontend
  * @param {Request} req - request object
@@ -65,10 +69,11 @@ export const validateLoginType = async (req, res, next) => {
  */
 
 export const findUser = async (req, res, next) => {
-  const user = await userExists(req.body.loginType, req.body.login);
+  const loginType = getType(req.body.login);
+  const user = await userExists(loginType, req.body.login);
   if (!user)
     return res
       .status(400)
-      .json({ message: `User Not found on this ${req.body.loginType}` });
+      .json({ message: `User Not found on this ${loginType}` });
   next();
 };

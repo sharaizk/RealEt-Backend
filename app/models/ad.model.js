@@ -15,13 +15,14 @@ const adSchema = new Schema(
         type: String,
         required: [true, "Society Name is required"],
       },
-      city: { type: String, required: [true, "City is required"] },
-      province: { type: String, required: [true, "Province is required"] },
       size: { type: String, required: [true, "Property Size is required"] },
       unit: { type: String, required: [true, "Unit is required"] },
       deleteFlag: { type: Boolean, default: false },
       featuredFlag: { type: Boolean, default: false },
     },
+    city: { type: Number, ref: "City" },
+    province: { type: Number, ref: "Province" },
+    location: { type: Number, ref: "Location" },
   },
   { timestamps: true }
 );

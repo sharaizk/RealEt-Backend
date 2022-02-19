@@ -79,7 +79,10 @@ export const roleSignup = async (req, res) => {
   try {
     const { role, _id } = req?.user;
     roles[role].create({ userId: _id });
-    res.status(200).json({ message: "User signed up successfully, an account verification otp has been sent to you" });
+    res.status(200).json({
+      message:
+        "User signed up successfully, an account verification otp has been sent to you",
+    });
   } catch (error) {
     User.findOneAndDelete({ _id: req?.user?._id });
     res.status(400).json({ message: error.message });

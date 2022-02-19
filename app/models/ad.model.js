@@ -9,7 +9,7 @@ const adSchema = new Schema(
     description: { type: String },
     type: { type: String, required: [true, "Property type is required"] },
     info: {
-      price: { type: Number, required: [true, "Price is required"] },
+      price: { type: String, required: [true, "Price is required"] },
       coords: { longitude: { type: Number }, latitude: { type: Number } },
       societyName: {
         type: String,
@@ -18,6 +18,7 @@ const adSchema = new Schema(
       city: { type: String, required: [true, "City is required"] },
       province: { type: String, required: [true, "Province is required"] },
       size: { type: String, required: [true, "Property Size is required"] },
+      unit: { type: String, required: [true, "Unit is required"] },
     },
   },
   { timestamps: true }

@@ -1,6 +1,6 @@
-import { Scheme, Types, model } from "mongoose";
+import { Schema, Types, model } from "mongoose";
 
-const portfolioScheme = new Scheme(
+const portfolioScheme = new Schema(
   {
     builderId: { type: Types.ObjectId, ref: "User" },
     title: { type: String, required: [true, "Title is required"] },

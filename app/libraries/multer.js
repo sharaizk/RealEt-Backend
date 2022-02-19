@@ -1,12 +1,14 @@
 import multer from "multer";
 import aws from "aws-sdk";
+import S3 from "aws-sdk/clients/s3.js";
 import multerS3 from "multer-s3";
+import fs from "fs";
 import config from "../config";
 
-const s3 = new aws.S3({
+const s3 = new S3({
   apiVersion: "api-v1",
   accessKeyId: config.accessKeyId,
-  secretAccessKey: config.accessKeyId,
+  secretAccessKey: config.secretAccessKey,
   region: config.region,
 });
 
@@ -30,3 +32,14 @@ export default multer({
       cb(null, `projects/${req?.body?.title}${Date.now().toString()}`),
   }),
 });
+
+export function uploadPhoto(file) {
+  const fileStream = fs.createReadStream(file.path);
+
+  const uploadParams = {
+    Bucket: config.AWSBucket,
+    Body: fileStream,
+    Key: file.filename + "-" + file.originalname,
+  };
+  return s3.upload(uploadParams).promise();
+}

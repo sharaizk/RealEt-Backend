@@ -1,10 +1,8 @@
-import { NextFunction, Request, Response } from "express";
-import { Ad } from "../models";
-import { uploadPhoto, getURL } from "../libraries/multer";
+import { Request, Response } from "express";
 import fs from "fs";
 import { promisify } from "util";
-
-const unlinkFile = promisify(fs.unlink);
+import { uploadPhoto } from "../libraries/multer";
+import { Ad, User } from "../models";
 
 /**
  * This Function allows User to post a new ad
@@ -13,6 +11,7 @@ const unlinkFile = promisify(fs.unlink);
  */
 
 export const postAd = async (req, res) => {
+  const unlinkFile = promisify(fs.unlink);
   try {
     const file = req.files;
     const { title, description, type, info } = req.body;
@@ -23,6 +22,7 @@ export const postAd = async (req, res) => {
       await unlinkFile(file[i].path);
     }
     const ad = await Ad.create({
+      userId: req.user._id,
       title,
       photos,
       description,
@@ -35,6 +35,6 @@ export const postAd = async (req, res) => {
     });
   } catch (error) {
     console.log("error");
-    return res.status(404).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };

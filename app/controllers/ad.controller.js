@@ -34,12 +34,8 @@ export const postAd = async (req, res) => {
       message: "Ad Posted Successfully",
     });
   } catch (error) {
-<<<<<<< HEAD
     console.log("error");
     return res.status(500).json({ message: error.message });
-=======
-    return res.status(404).json({ message: error.message });
->>>>>>> 842f15d991730c6b4fd6fbb887a5c9e7ed0a887f
   }
 };
 

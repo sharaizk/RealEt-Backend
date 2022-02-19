@@ -102,6 +102,7 @@ export const getAllAds = async (req, res) => {
   try {
     let ads = await Ad.find();
     return res.status(200).json({
+      count: ads.length,
       Ads: ads,
     });
   } catch (error) {

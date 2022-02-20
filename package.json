@@ -7,7 +7,7 @@
     "start": "node dist/App.js",
     "dev": "nodemon --exec babel-node app/App.js",
     "copy-config": "node copyDbConfig.js",
-    "build": "babel app -d dist --source-maps inline --copy-files && npm run copy-config"
+    "build": "babel app -d dist --source-maps inline --copy-files && npm run copy-config && npm run start"
   },
   "keywords": [],
   "author": "",

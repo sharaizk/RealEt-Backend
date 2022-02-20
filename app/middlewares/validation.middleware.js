@@ -1,10 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import isEmail from "validator/lib/isemail";
-import {
-  isPhoneNumber,
-  userExists,
-  getType,
-} from "../validators/auth.validator";
+import { getType, userExists } from "../validators/auth.validator";
+
 /**
  * Validates data sent from frontend
  * @param {Request} req - request object
@@ -49,8 +45,7 @@ export const validateLoginType = async (req, res, next) => {
   try {
     const { login = "" } = req.body;
     let type = null;
-    type =
-      (isPhoneNumber(login) && "phoneNumber") || (isEmail(login) && "email");
+    type = getType(login);
     if (!type) {
       return res.status(300).json({ message: "Invalid PhoneNumber / Email" });
     }

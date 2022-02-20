@@ -31,7 +31,10 @@ const adSchema = new Schema(
     province: { type: Number, ref: "Province" },
     location: { type: Number, ref: "Location" },
     deleteFlag: { type: Boolean, default: false },
-    featuredFlag: { type: Boolean, default: false },
+    featuredInfo: {
+      isFeatured: { type: Boolean, default: false },
+      requested: { type: Boolean, default: false },
+    },
   },
   { timestamps: true }
 );

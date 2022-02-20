@@ -2,7 +2,8 @@ import { Request, Response } from "express";
 import fs from "fs";
 import { promisify } from "util";
 import { uploadPhoto } from "../libraries/multer";
-import { Ad, User } from "../models";
+import { Ad } from "../models";
+import roles from "../config/roles";
 
 /**
  * This Function allows User to post a new ad
@@ -30,7 +31,12 @@ export const postAd = async (req, res) => {
       info,
     });
     ad.save();
-    return res.status(200).json({
+    await roles[req.user.role].findOneAndUpdate(
+      { userId: req.user._id },
+      { $push: { ads: ad._id } },
+      { new: true }
+    );
+    return res.status(202).json({
       message: "Ad Posted Successfully",
     });
   } catch (error) {
@@ -44,14 +50,14 @@ export const postAd = async (req, res) => {
  * @param {Request} req - request object
  * @param {Response} res - response object
  */
-export const getAdByUserId = async (req, res) => {
+export const myAds = async (req, res) => {
   try {
-    const userId = req.params.id;
+    const userId = req.user._id;
 
-    const ad = await Ad.findById({ userId });
-    console.log(ad);
+    const ads = await Ad.find({ userId });
+    res.status(200).json({ data: ads, count: ads.length });
   } catch (error) {
-    return res.status(404).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -63,12 +69,17 @@ export const getAdByUserId = async (req, res) => {
 export const removeAd = async (req, res) => {
   try {
     const _id = req.params.id;
-    await Ad.findByIdAndUpdate(_id, { deleteFlag: true });
-    return res.status(200).json({
-      message: "Ad Deleted Successfully!",
+    const ad = await Ad.findOneAndUpdate(
+      { $and: [{ userId: req.user._id, _id, deleteFlag: false }] },
+      { deleteFlag: true },
+      { new: true }
+    );
+    res.status(202).json({
+      message: ad ? "Deleted" : "Ad not found",
+      status: ad ? true : false,
     });
   } catch (error) {
-    return res.status(404).json({
+    return res.status(500).json({
       message: error.message,
     });
   }
@@ -82,12 +93,19 @@ export const removeAd = async (req, res) => {
 export const featureProperty = async (req, res) => {
   try {
     const _id = req.params.id;
-    await Ad.findByIdAndUpdate(_id, { featuredFlag: true });
-    return res.status(200).json({
-      message: "Ad Featured Successfully!",
+    const ad = await Ad.findOneAndUpdate(
+      { $and: [{ userId: req.user._id, _id, deleteFlag: false }] },
+      { "featuredInfo.request": true },
+      { new: true }
+    );
+    res.status(202).json({
+      message: ad
+        ? `Dear ${req.user.fullName} your request for featuring ad has been submitted to admin`
+        : "Ad not found",
+      status: ad ? true : false,
     });
   } catch (error) {
-    return res.status(404).json({
+    return res.status(500).json({
       message: error.message,
     });
   }
@@ -100,12 +118,13 @@ export const featureProperty = async (req, res) => {
  */
 export const getAllAds = async (req, res) => {
   try {
-    let ads = await Ad.find();
+    let ads = await Ad.find({ deleteFlag: false }).select("-userId");
     return res.status(200).json({
-      Ads: ads,
+      count: ads.length,
+      data: ads,
     });
   } catch (error) {
-    return res.status(404).json({
+    return res.status(500).json({
       message: error.message,
     });
   }
@@ -118,14 +137,18 @@ export const getAllAds = async (req, res) => {
  */
 export const editAd = async (req, res) => {
   try {
-    const _id = req.params.id;
-
-    await Ad.findByIdAndUpdate(_id, req?.body);
-    return res.status(200).json({
-      message: "Ad Update Successfully!",
+    const { id: _id } = req.params;
+    const ad = await Ad.findOneAndUpdate(
+      { $and: [{ userId: req.user._id, _id, deleteFlag: false }] },
+      { ...req.body },
+      { new: true }
+    );
+    res.status(ad ? 201 : 400).json({
+      message: ad ? "Updated" : "Ad not found",
+      ...({ ad } && { ad }),
     });
   } catch (error) {
-    return res.status(404).json({
+    return res.status(500).json({
       message: error.message,
     });
   }

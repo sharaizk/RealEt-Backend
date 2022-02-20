@@ -1,7 +1,7 @@
 import { Router } from "express";
 import {
   postAd,
-  getAdByUserId,
+  myAds,
   removeAd,
   featureProperty,
   getAllAds,
@@ -30,19 +30,19 @@ router.post("/post", userAuth, agentOrConsumer, upload.array("photos"), postAd);
  * @param
  *id -userId
  */
-router.get("/getUserAd/:id", getAdByUserId);
+router.get("/myAds", userAuth, myAds);
 
 /**
  * @param
  *Ad Id -id
  */
-router.delete("/remove/:id", removeAd);
+router.delete("/remove/:id", userAuth, removeAd);
 
 /**
  * @param
  *Ad Id -id
  */
-router.put("/feature/:id", featureProperty);
+router.put("/feature/:id", userAuth, featureProperty);
 
 /**
  *All Ads
@@ -50,14 +50,14 @@ router.put("/feature/:id", featureProperty);
 router.get("/", userAuth, getAllAds);
 
 /**
+ * @param id - Id of Ad
  * @body
- * @param
  * title
  * photos
  * description
  * type
  * info - {price, coords, societyName, city province, size,type}
  */
-router.put("/update/:id", upload.array("photos"), editAd);
+router.put("/update/:id", userAuth, upload.array("photos"), editAd);
 
 export default router;

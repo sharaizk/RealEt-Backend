@@ -101,7 +101,8 @@ export const roleSignup = async (req, res) => {
 
 export const forgotPassword = async (req, res) => {
   try {
-    const { loginType, login } = req.body;
+    const { login } = req.body;
+    const loginType = getType(login);
     const OTP = await randomOTP();
     await sendOTP(loginType, login, OTP, {
       email: login,
@@ -109,7 +110,7 @@ export const forgotPassword = async (req, res) => {
       text: `The OTP for your reset password is ${OTP}`,
     });
     await User.findOneAndUpdate(
-      { [loginType]: login },
+      { [loginType]: new RegExp(login, "i") },
       { $set: { "otp.code": OTP, "otp.status": false, "otp.mode": "reset" } }
     );
 
@@ -159,14 +160,13 @@ export const verifyOTP = async (req, res) => {
  */
 export const resetPassword = async (req, res) => {
   try {
-    const { password, login, loginType } = req.body;
+    const { password, login } = req.body;
+    console.log(password, login);
+
+    const loginType = getType(login);
     const user = await User.findOneAndUpdate(
       {
-        $and: [
-          { [loginType]: login },
-          { "otp.status": true },
-          { "otp.mode": "reset" },
-        ],
+        $and: [{ [loginType]: new RegExp(login, "i") }, { "otp.status": true }],
       },
       { $unset: { "otp.code": "", "otp.mode": "" } },
       { new: true }

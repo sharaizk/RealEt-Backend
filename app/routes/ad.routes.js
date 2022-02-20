@@ -9,6 +9,8 @@ import {
 } from "../controllers/ad.controller";
 
 import multer from "multer";
+import { agentOrConsumer } from "../middlewares/roles.middleware";
+import { userAuth } from "../middlewares/auth.middleware";
 
 const upload = multer({ dest: "uploads/" });
 
@@ -22,7 +24,7 @@ const router = Router();
  * type
  * info - {price, coords, societyName, city province, size}
  */
-router.post("/post", upload.array("photos"), postAd);
+router.post("/post", userAuth, agentOrConsumer, upload.array("photos"), postAd);
 
 /**
  * @param
@@ -45,7 +47,7 @@ router.put("/feature/:id", featureProperty);
 /**
  *All Ads
  */
-router.get("/", getAllAds);
+router.get("/", userAuth, getAllAds);
 
 /**
  * @body

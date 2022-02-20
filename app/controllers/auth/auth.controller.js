@@ -11,7 +11,7 @@ import { findUser, getType, userExists } from "../../validators/auth.validator";
 export const userLogin = async (req, res) => {
   try {
     const { password, login } = req?.body;
-    const user = await findUser(getType(login), login);
+    const user = await findUser(getType(login), new RegExp(login, "i"));
     if (!user) {
       return res
         .status(404)
@@ -27,9 +27,10 @@ export const userLogin = async (req, res) => {
       message: "Logged In",
       token: user.getJwtToken(),
       role: user.role,
+      verificationStatus: user.otp.status,
     });
   } catch (error) {
-    res.status(404).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -41,8 +42,11 @@ export const userLogin = async (req, res) => {
  */
 export const userSignup = async (req, res, next) => {
   try {
-    const { fullName, login, password, role = "Consumer" } = req?.body;
+    let { fullName, login, password, role = "Consumer" } = req?.body;
     const type = getType(login);
+    if (type === "email") {
+      login = login.toLowerCase();
+    }
     if (await userExists(type, login)) {
       return res
         .status(400)
@@ -55,7 +59,7 @@ export const userSignup = async (req, res, next) => {
       role,
     });
     const OTP = await randomOTP();
-    user.otp = { code: OTP, status: false };
+    user.otp = { code: OTP, status: false, mode: "signup" };
     user.save();
 
     await sendOTP(type, login, OTP, {
@@ -66,7 +70,7 @@ export const userSignup = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
-    res.status(404).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -106,7 +110,7 @@ export const forgotPassword = async (req, res) => {
     });
     await User.findOneAndUpdate(
       { [loginType]: login },
-      { $set: { "otp.code": OTP, "otp.status": false } }
+      { $set: { "otp.code": OTP, "otp.status": false, "otp.mode": "reset" } }
     );
 
     res.status(200).json({
@@ -127,15 +131,19 @@ export const verifyOTP = async (req, res) => {
   try {
     const { login, otp } = req.body;
     const loginType = getType(login);
+    // NOW ITS NOT CASE SENSITIVE
     const user = await User.findOne({
-      $and: [{ [loginType]: login }, { "otp.code": otp }],
+      $and: [{ [loginType]: new RegExp(login, "i") }, { "otp.code": otp }],
     });
     if (!user) {
       return res.status(401).json({ message: "OTP not valid", status: false });
     }
     await User.findOneAndUpdate(
       { _id: user._id },
-      { $unset: { "otp.code": "" }, $set: { "otp.status": true } },
+      {
+        $unset: { "otp.code": "", "otp.mode": "" },
+        $set: { "otp.status": true },
+      },
       { new: true }
     );
     res.status(200).json({ message: "OTP Verified", status: true });
@@ -153,8 +161,14 @@ export const resetPassword = async (req, res) => {
   try {
     const { password, login, loginType } = req.body;
     const user = await User.findOneAndUpdate(
-      { $and: [{ [loginType]: login }, { "otp.status": true }] },
-      { $unset: { otp: "" } },
+      {
+        $and: [
+          { [loginType]: login },
+          { "otp.status": true },
+          { "otp.mode": "reset" },
+        ],
+      },
+      { $unset: { "otp.code": "", "otp.mode": "" } },
       { new: true }
     );
     if (!user) {

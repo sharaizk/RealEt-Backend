@@ -21,7 +21,11 @@ const userSchema = new Schema(
       enum: ["Consumer", "Agent", "Builder", "Admin"],
       default: "Consumer",
     },
-    otp: { status: { type: String, default: null }, code: { type: Number } },
+    otp: {
+      status: { type: String, default: null },
+      code: { type: Number },
+      mode: { type: String },
+    },
   },
   { timestamps: true, bufferTimeoutMS: 20000 }
 );

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { authRoutes, adRoutes } from ".";
+import { authRoutes, adRoutes, geographyRoutes } from ".";
 
 import { validateLoginType } from "../middlewares/validation.middleware";
 
@@ -9,5 +9,7 @@ const router = Router();
 router.use("/auth", validateLoginType, authRoutes);
 
 router.use("/ad", adRoutes);
+
+router.use("/geography", geographyRoutes);
 
 export default router;

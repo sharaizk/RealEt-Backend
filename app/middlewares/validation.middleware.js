@@ -48,6 +48,8 @@ export const validateAuth = async (req, res, next) => {
 export const validateLoginType = async (req, res, next) => {
   try {
     const { login = "" } = req.body;
+    console.log(req.body);
+
     let type = null;
     type =
       (isPhoneNumber(login) && "phoneNumber") || (isEmail(login) && "email");

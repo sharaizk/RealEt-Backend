@@ -10,7 +10,7 @@ const adSchema = new Schema(
     type: { type: String, required: [true, "Property type is required"] },
     propertySubType: {
       type: String,
-      required: [true, "Property Sub type is required"],
+      required: [true, "Property Sub type is required"], //Commercial, Resedentional,Agricultural
     },
     info: {
       price: { type: String, required: [true, "Price is required"] },

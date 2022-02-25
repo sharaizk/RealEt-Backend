@@ -3,6 +3,9 @@ import roles from "../../config/roles";
 import { User } from "../../models";
 import { randomOTP, sendOTP } from "../../utils";
 import { findUser, getType, userExists } from "../../validators/auth.validator";
+import { uploadPhoto } from "../../libraries/multer";
+import fs from "fs";
+import { promisify } from "util";
 /**
  * This Function allows User to login To his respective Dashboard based on Role
  * @param {Request} req - request object
@@ -41,8 +44,15 @@ export const userLogin = async (req, res) => {
  * @param {NextFunction} next - Next Function
  */
 export const userSignup = async (req, res, next) => {
+  const unlinkFile = promisify(fs.unlink);
+
   try {
     let { fullName, login, password, role = "Consumer" } = req?.body;
+    const image = req.file;
+
+    const result = await uploadPhoto(image);
+    await unlinkFile(image.path);
+
     const type = getType(login);
     if (type === "email") {
       login = login.toLowerCase();
@@ -57,6 +67,7 @@ export const userSignup = async (req, res, next) => {
       [type]: login,
       password,
       role,
+      profileImage: result.Location,
     });
     const OTP = await randomOTP();
     user.otp = { code: OTP, status: false, mode: "signup" };

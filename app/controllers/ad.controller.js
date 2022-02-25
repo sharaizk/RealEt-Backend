@@ -15,7 +15,7 @@ export const postAd = async (req, res) => {
   const unlinkFile = promisify(fs.unlink);
   try {
     const file = req?.files;
-    const { title, description, type, info } = req?.body;
+    const { title, description, type, propertySubType, info } = req?.body;
     let photos = [];
     for (let i = 0; i < file.length; i++) {
       const result = await uploadPhoto(file[i]);
@@ -28,6 +28,7 @@ export const postAd = async (req, res) => {
       photos,
       description,
       type,
+      propertySubType,
       info,
     });
     ad.save();

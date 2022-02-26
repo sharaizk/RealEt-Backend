@@ -2,7 +2,7 @@
  * This File contains all validations functions regarding Auth,
  */
 
-import isEmail from "validator/lib/isemail";
+import validator from "validator";
 import { User } from "../models";
 
 /**
@@ -33,4 +33,5 @@ export const isPhoneNumber = (str) =>
  * @param {string} login
  */
 export const getType = (login) =>
-  (isPhoneNumber(login) && "phoneNumber") || (isEmail(login) && "email");
+  (isPhoneNumber(login) && "phoneNumber") ||
+  (validator.isEmail(login) && "email");

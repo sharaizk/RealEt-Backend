@@ -51,8 +51,7 @@ export const validateLoginType = async (req, res, next) => {
     console.log(req.body);
 
     let type = null;
-    type =
-      (isPhoneNumber(login) && "phoneNumber") || (isEmail(login) && "email");
+    type = getType(login);
     if (!type) {
       return res.status(300).json({ message: "Invalid PhoneNumber / Email" });
     }

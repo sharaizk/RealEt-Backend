@@ -8,11 +8,13 @@ import { Location } from "../../models";
 
 export const getLocations = async (req, res) => {
   try {
-    const { page = 1, limit = 10, sort = "key", city_id } = req.query;
+    const { page = 1, limit = 10, sort = "key" } = req.query;
+    const { city_id = 1 } = req.body?.query;
+
     if (!city_id || isNaN(city_id)) {
       return res.status(400).json({ message: "Invalid City id" });
     }
-    const locations = await Location.find({ city: city_id })
+    const locations = await Location.find({ city: 100 })
       .limit(+limit * 1)
       .skip((+page - 1) * +limit)
       .sort(sort);

@@ -1,15 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-<<<<<<< HEAD
-import isEmail from "validator/lib/isemail";
-import {
-  isPhoneNumber,
-  userExists,
-  getType,
-} from "../validators/auth.validator";
-=======
 import { getType, userExists } from "../validators/auth.validator";
 
->>>>>>> a11c37cd26bc5dbb1f1f7a98b7cbc030c47ea6f2
 /**
  * Validates data sent from frontend
  * @param {Request} req - request object

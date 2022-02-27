@@ -15,7 +15,16 @@ export const postAd = async (req, res) => {
   const unlinkFile = promisify(fs.unlink);
   try {
     const file = req?.files;
-    const { title, description, type, propertySubType, info } = req?.body;
+    const {
+      title,
+      description,
+      type,
+      propertySubType,
+      info,
+      city,
+      province,
+      location,
+    } = req?.body;
     let photos = [];
     for (let i = 0; i < file.length; i++) {
       const result = await uploadPhoto(file[i]);
@@ -30,6 +39,9 @@ export const postAd = async (req, res) => {
       type,
       propertySubType,
       info,
+      city,
+      province,
+      location,
     });
     ad.save();
     await roles[req.user.role].findOneAndUpdate(
@@ -41,7 +53,6 @@ export const postAd = async (req, res) => {
       message: "Ad Posted Successfully",
     });
   } catch (error) {
-    console.log("error");
     return res.status(500).json({ message: error.message });
   }
 };
@@ -138,10 +149,22 @@ export const getAllAds = async (req, res) => {
  */
 export const editAd = async (req, res) => {
   try {
+    let photos = [];
+
+    if (req?.files) {
+      const unlinkFile = promisify(fs.unlink);
+      const file = req?.files;
+
+      for (let i = 0; i < file.length; i++) {
+        const result = await uploadPhoto(file[i]);
+        photos.push(result.Location);
+        await unlinkFile(file[i].path);
+      }
+    }
     const { id: _id } = req.params;
     const ad = await Ad.findOneAndUpdate(
       { $and: [{ userId: req.user._id, _id, deleteFlag: false }] },
-      { ...req.body },
+      { ...req.body, $push: { photos } },
       { new: true }
     );
     res.status(ad ? 201 : 400).json({

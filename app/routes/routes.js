@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { authRoutes, adRoutes } from ".";
+import { authRoutes, adRoutes, portfolioRoute, geographyRoutes } from ".";
 
 import { validateLoginType } from "../middlewares/validation.middleware";
 import multer from "multer";
@@ -11,5 +12,9 @@ const router = Router();
 router.use("/auth", upload.single("photo"), validateLoginType, authRoutes);
 
 router.use("/ad", adRoutes);
+
+router.use("/portfolio", portfolioRoute);
+
+router.use("/geography", geographyRoutes);
 
 export default router;

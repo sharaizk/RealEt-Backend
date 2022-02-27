@@ -22,13 +22,16 @@ const router = Router();
  * photos
  * description
  * type
- * info - {price, coords, societyName, city province, size}
+ * info - {price, coords, societyName, city, province, size, unit, features[], Location}
+ * city
+ * province
+ * location
  */
 router.post("/post", userAuth, agentOrConsumer, upload.array("photos"), postAd);
 
 /**
- * @param
- *id -userId
+ * @headers
+ * x-access-token
  */
 router.get("/myAds", userAuth, myAds);
 
@@ -40,7 +43,7 @@ router.delete("/remove/:id", userAuth, removeAd);
 
 /**
  * @param
- *Ad Id -id
+ * Ad Id -id
  */
 router.put("/feature/:id", userAuth, featureProperty);
 

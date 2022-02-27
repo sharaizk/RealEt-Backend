@@ -25,7 +25,7 @@ const adSchema = new Schema(
       phase: { type: String },
       features: [{ type: String }],
       size: { type: String, required: [true, "Property Size is required"] },
-      unit: { type: String, required: [true, "Unit is required"] },
+      unit: { type: String, required: [true, "Unit is required"] }, //Marla Kanal
     },
     city: { type: Number, ref: "City" },
     province: { type: Number, ref: "Province" },

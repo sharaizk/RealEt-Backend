@@ -60,7 +60,7 @@ export const myPortfolio = async (req, res) => {
     const userId = req.user._id;
 
     const portfolio = await Portfolio.find({ userId });
-    res.status(200).json({ data: portfolio, count: portfolio.length });
+    res.status(200).json({ count: portfolio.length, data: portfolio });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }

@@ -1,16 +1,11 @@
 import { Router } from "express";
-import multer from "multer";
 import {
   forgotPassword,
   resetPassword,
-  roleSignup,
   userLogin,
-  userSignup,
   verifyOTP,
 } from "../controllers/auth/auth.controller";
 import { findUser, validateAuth } from "../middlewares/validation.middleware";
-
-const upload = multer({ dest: "uploads/" });
 
 const router = Router();
 
@@ -20,21 +15,6 @@ const router = Router();
  * password
  */
 router.post("/login", validateAuth, userLogin);
-
-/**
- * @body
- * login - email or phoneNumber
- * password
- * fulName
- * role - optional, Consumer by default
- */
-router.post(
-  "/signup",
-  upload.single("photo"),
-  validateAuth,
-  userSignup,
-  roleSignup
-);
 
 /**
  * @body

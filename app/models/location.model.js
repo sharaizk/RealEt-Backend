@@ -4,7 +4,7 @@ const locationSchema = new Schema(
   {
     name: String,
     key: { type: String, unique: true },
-    city: { type: Number, ref: "cities" },
+    city: { type: Number, ref: "City" },
   },
   { timestamps: true }
 );

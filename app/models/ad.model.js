@@ -8,6 +8,10 @@ const adSchema = new Schema(
     virtualTour: [{}],
     description: { type: String },
     type: { type: String, required: [true, "Property type is required"] },
+    propertySubType: {
+      type: String,
+      required: [true, "Property Sub type is required"], //Commercial, Resedentional,Agricultural
+    },
     info: {
       price: { type: String, required: [true, "Price is required"] },
       coords: { longitude: { type: Number }, latitude: { type: Number } },
@@ -15,8 +19,13 @@ const adSchema = new Schema(
         type: String,
         required: [true, "Society Name is required"],
       },
+      block: { type: String },
+      sector: { type: String },
+      street: { type: String },
+      phase: { type: String },
+      features: [{ type: String }],
       size: { type: String, required: [true, "Property Size is required"] },
-      unit: { type: String, required: [true, "Unit is required"] },
+      unit: { type: String, required: [true, "Unit is required"] }, //Marla Kanal
     },
     city: { type: Number, ref: "City" },
     location: { type: Number, ref: "Location" },

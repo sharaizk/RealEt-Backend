@@ -17,3 +17,14 @@ export const agentOrConsumer = async (req, res, next) => {
     res.status(500).json({ message: error.message });
   }
 };
+export const builderOrConsumer = async (req, res, next) => {
+  try {
+    const { role } = req.user;
+    if (role !== "Builder" && role !== "Consumer") {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    next();
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

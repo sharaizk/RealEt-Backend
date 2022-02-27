@@ -2,19 +2,19 @@ import { Request, Response } from "express";
 import fs from "fs";
 import { promisify } from "util";
 import { uploadPhoto } from "../libraries/multer";
-import { Ad } from "../models";
+import { Portfolio } from "../models";
 import roles from "../config/roles";
 
 /**
- * This Function allows User to post a new ad
+ * This Function allows Builder to post his portfolio
  * @param {Request} req - request object
  * @param {Response} res - response object
  */
-
-export const postAd = async (req, res) => {
-  const unlinkFile = promisify(fs.unlink);
+export const addPortfolio = async (req, res) => {
   try {
+    const unlinkFile = promisify(fs.unlink);
     const file = req?.files;
+    console.log(req);
     const { title, description, type, propertySubType, info, city, location } =
       req?.body;
     let photos = [];
@@ -23,7 +23,7 @@ export const postAd = async (req, res) => {
       photos.push(result.Location);
       await unlinkFile(file[i].path);
     }
-    const ad = await Ad.create({
+    const portfolio = await Portfolio.create({
       userId: req.user._id,
       title,
       photos,
@@ -34,14 +34,15 @@ export const postAd = async (req, res) => {
       city,
       location,
     });
-    ad.save();
+    portfolio.save();
+
     await roles[req.user.role].findOneAndUpdate(
       { userId: req.user._id },
-      { $push: { ads: ad._id } },
+      { $push: { portfolio: portfolio._id } },
       { new: true }
     );
     return res.status(202).json({
-      message: "Ad Posted Successfully",
+      message: "Portfolio Added Successfully",
     });
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -49,37 +50,38 @@ export const postAd = async (req, res) => {
 };
 
 /**
- * This Function allows User to get his Ads
+ * This Function allows Builder to get his Portfolio
  * @param {Request} req - request object
  * @param {Response} res - response object
  */
-export const myAds = async (req, res) => {
+
+export const myPortfolio = async (req, res) => {
   try {
     const userId = req.user._id;
 
-    const ads = await Ad.find({ userId });
-    res.status(200).json({ data: ads, count: ads.length });
+    const portfolio = await Portfolio.find({ userId });
+    res.status(200).json({ count: portfolio.length, data: portfolio });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
 };
 
 /**
- * This Function allows User remove his ad
+ * This Function allows Builder to remove his Portfolio
  * @param {Request} req - request object
  * @param {Response} res - response object
  */
-export const removeAd = async (req, res) => {
+export const removePortfolio = async (req, res) => {
   try {
     const _id = req.params.id;
-    const ad = await Ad.findOneAndUpdate(
+    const portfolio = await Portfolio.findOneAndUpdate(
       { $and: [{ userId: req.user._id, _id, deleteFlag: false }] },
       { deleteFlag: true },
       { new: true }
     );
     res.status(202).json({
-      message: ad ? "Deleted" : "Ad not found",
-      status: ad ? true : false,
+      message: portfolio ? "Deleted" : "Portfolio not found",
+      status: portfolio ? true : false,
     });
   } catch (error) {
     return res.status(500).json({
@@ -89,56 +91,11 @@ export const removeAd = async (req, res) => {
 };
 
 /**
- * This Function allows User Feature His Property
+ * This Function allows Builder to Edit Portfolio
  * @param {Request} req - request object
  * @param {Response} res - response object
  */
-export const featureProperty = async (req, res) => {
-  try {
-    const _id = req.params.id;
-    const ad = await Ad.findOneAndUpdate(
-      { $and: [{ userId: req.user._id, _id, deleteFlag: false }] },
-      { "featuredInfo.request": true },
-      { new: true }
-    );
-    res.status(202).json({
-      message: ad
-        ? `Dear ${req.user.fullName} your request for featuring ad has been submitted to admin`
-        : "Ad not found",
-      status: ad ? true : false,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: error.message,
-    });
-  }
-};
-
-/**
- * This Function allows User Get All Ads
- * @param {Request} req - request object
- * @param {Response} res - response object
- */
-export const getAllAds = async (req, res) => {
-  try {
-    let ads = await Ad.find({ deleteFlag: false }).select("-userId");
-    return res.status(200).json({
-      count: ads.length,
-      data: ads,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: error.message,
-    });
-  }
-};
-
-/**
- * This Function allows User to Edit Ad
- * @param {Request} req - request object
- * @param {Response} res - response object
- */
-export const editAd = async (req, res) => {
+export const editPortfolio = async (req, res) => {
   try {
     let photos = [];
 
@@ -152,15 +109,37 @@ export const editAd = async (req, res) => {
         await unlinkFile(file[i].path);
       }
     }
+
     const { id: _id } = req.params;
-    const ad = await Ad.findOneAndUpdate(
+    const portfolio = await Portfolio.findOneAndUpdate(
       { $and: [{ userId: req.user._id, _id, deleteFlag: false }] },
       { ...req.body, $push: { photos } },
       { new: true }
     );
-    res.status(ad ? 201 : 400).json({
-      message: ad ? "Updated" : "Ad not found",
-      ...({ ad } && { ad }),
+    res.status(portfolio ? 201 : 400).json({
+      message: portfolio ? "Updated" : "Portfolio not found",
+      ...({ portfolio } && { portfolio }),
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+/**
+ * This Function allows Builder Get All Portfolio
+ * @param {Request} req - request object
+ * @param {Response} res - response object
+ */
+export const getAllPortfolio = async (req, res) => {
+  try {
+    let portfolio = await Portfolio.find({ deleteFlag: false }).select(
+      "-userId"
+    );
+    return res.status(200).json({
+      count: portfolio.length,
+      data: portfolio,
     });
   } catch (error) {
     return res.status(500).json({

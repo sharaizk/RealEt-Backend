@@ -15,7 +15,6 @@ export const userAuth = async (req, res, next) => {
     const token =
       req.headers["x-access-token"] ||
       req?.headers?.authorization?.split(" ")[1];
-
     if (!token || token === "null") {
       return res
         .status(401)

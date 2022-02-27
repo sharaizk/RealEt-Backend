@@ -14,7 +14,7 @@ export const getLocations = async (req, res) => {
     if (!city_id || isNaN(city_id)) {
       return res.status(400).json({ message: "Invalid City id" });
     }
-    const locations = await Location.find({ city: 100 })
+    const locations = await Location.find({ city: city_id })
       .limit(+limit * 1)
       .skip((+page - 1) * +limit)
       .sort(sort);

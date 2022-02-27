@@ -14,7 +14,6 @@ export const addPortfolio = async (req, res) => {
   try {
     const unlinkFile = promisify(fs.unlink);
     const file = req?.files;
-    console.log(req);
     const { title, description, type, propertySubType, info, city, location } =
       req?.body;
     let photos = [];

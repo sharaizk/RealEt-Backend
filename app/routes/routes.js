@@ -1,14 +1,32 @@
 import { Router } from "express";
-import { authRoutes, adRoutes, portfolioRoute, geographyRoutes } from ".";
-
-import { validateLoginType } from "../middlewares/validation.middleware";
 import multer from "multer";
-const upload = multer({ dest: "uploads/" });
+import { adRoutes, authRoutes, geographyRoutes, portfolioRoute } from ".";
+import { roleSignup, userSignup } from "../controllers/auth/auth.controller";
+import {
+  validateAuth,
+  validateLoginType,
+} from "../middlewares/validation.middleware";
 
 const router = Router();
+const upload = multer({ dest: "uploads/" });
+/**
+ * @body
+ * login - email or phoneNumber
+ * password
+ * fulName
+ * role - optional, Consumer by default
+ */
+router.post(
+  "/auth/signup",
+  upload.single("photo"),
+  validateLoginType,
+  validateAuth,
+  userSignup,
+  roleSignup
+);
 
 // Auth Routes for All types of Users
-router.use("/auth", upload.single("photo"), validateLoginType, authRoutes);
+router.use("/auth", validateLoginType, authRoutes);
 
 router.use("/ad", adRoutes);
 

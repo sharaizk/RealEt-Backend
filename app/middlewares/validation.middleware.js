@@ -23,6 +23,8 @@ export const validateAuth = async (req, res, next) => {
       case "login":
       case "signup":
         login || errors.push("Email/PhoneNumber Required");
+        password.length >= 6 ||
+          errors.push("Password should be atleast 6 characters long");
         password || errors.push("Password Field is required");
         break;
       default:
@@ -44,8 +46,6 @@ export const validateAuth = async (req, res, next) => {
 export const validateLoginType = async (req, res, next) => {
   try {
     const { login = "" } = req.body;
-    console.log(req.body);
-
     let type = null;
     type = getType(login);
     if (!type) {

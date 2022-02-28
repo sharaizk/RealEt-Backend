@@ -28,7 +28,6 @@ const adSchema = new Schema(
       unit: { type: String, required: [true, "Unit is required"] }, //Marla Kanal
     },
     city: { type: Number, ref: "City" },
-    province: { type: Number, ref: "Province" },
     location: { type: Number, ref: "Location" },
     deleteFlag: { type: Boolean, default: false },
     featuredInfo: {

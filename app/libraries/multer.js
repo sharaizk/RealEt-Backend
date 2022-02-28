@@ -1,8 +1,7 @@
-import multer from "multer";
-import aws from "aws-sdk";
 import S3 from "aws-sdk/clients/s3.js";
-import multerS3 from "multer-s3";
 import fs from "fs";
+import multer from "multer";
+import multerS3 from "multer-s3";
 import config from "../config";
 
 const s3 = new S3({

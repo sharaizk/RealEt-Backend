@@ -2,9 +2,7 @@ import { Router } from "express";
 import {
   forgotPassword,
   resetPassword,
-  roleSignup,
   userLogin,
-  userSignup,
   verifyOTP,
 } from "../controllers/auth/auth.controller";
 import { findUser, validateAuth } from "../middlewares/validation.middleware";
@@ -17,15 +15,6 @@ const router = Router();
  * password
  */
 router.post("/login", validateAuth, userLogin);
-
-/**
- * @body
- * login - email or phoneNumber
- * password
- * fulName
- * role - optional, Consumer by default
- */
-router.post("/signup", validateAuth, userSignup, roleSignup);
 
 /**
  * @body

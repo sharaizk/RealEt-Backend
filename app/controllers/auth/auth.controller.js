@@ -14,7 +14,7 @@ import { promisify } from "util";
 export const userLogin = async (req, res) => {
   try {
     const { password, login } = req?.body;
-    const user = await findUser(getType(login), new RegExp(login, "i"));
+    const user = await findUser(getType(login), login);
     if (!user) {
       return res
         .status(404)
@@ -49,7 +49,6 @@ export const userSignup = async (req, res, next) => {
   try {
     let { fullName, login, password, role = "Consumer" } = req?.body;
     const image = req.file;
-
     const result = await uploadPhoto(image);
     await unlinkFile(image.path);
 
@@ -121,7 +120,7 @@ export const forgotPassword = async (req, res) => {
       text: `The OTP for your reset password is ${OTP}`,
     });
     await User.findOneAndUpdate(
-      { [loginType]: new RegExp(login, "i") },
+      { [loginType]: login },
       { $set: { "otp.code": OTP, "otp.status": false, "otp.mode": "reset" } }
     );
 
@@ -145,7 +144,7 @@ export const verifyOTP = async (req, res) => {
     const loginType = getType(login);
     // NOW ITS NOT CASE SENSITIVE
     const user = await User.findOne({
-      $and: [{ [loginType]: new RegExp(login, "i") }, { "otp.code": otp }],
+      $and: [{ [loginType]: login }, { "otp.code": otp }],
     });
     if (!user) {
       return res.status(401).json({ message: "OTP not valid", status: false });
@@ -177,7 +176,11 @@ export const resetPassword = async (req, res) => {
     const loginType = getType(login);
     const user = await User.findOneAndUpdate(
       {
-        $and: [{ [loginType]: new RegExp(login, "i") }, { "otp.status": true }],
+        $and: [
+          { [loginType]: login },
+          { "otp.status": true },
+          { "otp.mode": "reset" },
+        ],
       },
       { $unset: { "otp.code": "", "otp.mode": "" } },
       { new: true }
@@ -192,3 +195,15 @@ export const resetPassword = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+
+/**
+ * My Profile
+ * @param {Request} req - request object
+ * @param {Response} res - response object
+ */
+
+export const myProfile = (req, res) =>
+  User.findOne({ _id: req.user._id })
+    .select("-password")
+    .then((user) => res.status(200).json({ user }))
+    .catch((err) => res.status(500).json({ message: err.message }));

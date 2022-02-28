@@ -1,7 +1,19 @@
 import { Router } from "express";
 import multer from "multer";
-import { adRoutes, authRoutes, geographyRoutes, portfolioRoute } from ".";
-import { roleSignup, userSignup } from "../controllers/auth/auth.controller";
+import {
+  adminRoutes,
+  adRoutes,
+  authRoutes,
+  geographyRoutes,
+  portfolioRoute,
+} from ".";
+import {
+  myProfile,
+  roleSignup,
+  userSignup,
+} from "../controllers/auth/auth.controller";
+import { userAuth } from "../middlewares/auth.middleware";
+import { isAdmin } from "../middlewares/roles.middleware";
 import {
   validateAuth,
   validateLoginType,
@@ -25,13 +37,17 @@ router.post(
   roleSignup
 );
 
+router.get("/auth/my-profile", userAuth, myProfile);
+
 // Auth Routes for All types of Users
 router.use("/auth", validateLoginType, authRoutes);
 
-router.use("/ad", adRoutes);
+router.use("/ads", adRoutes);
 
 router.use("/portfolio", portfolioRoute);
 
 router.use("/geography", geographyRoutes);
+
+router.use("/admin", userAuth, isAdmin, adminRoutes);
 
 export default router;

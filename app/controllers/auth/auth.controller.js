@@ -176,11 +176,7 @@ export const resetPassword = async (req, res) => {
     const loginType = getType(login);
     const user = await User.findOneAndUpdate(
       {
-        $and: [
-          { [loginType]: login },
-          { "otp.status": true },
-          { "otp.mode": "reset" },
-        ],
+        $and: [{ [loginType]: login }, { "otp.status": true }],
       },
       { $unset: { "otp.code": "", "otp.mode": "" } },
       { new: true }

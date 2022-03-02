@@ -28,3 +28,8 @@ export const builderOrConsumer = async (req, res, next) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const isAdmin = (req, res, next) =>
+  req.user.role === "Admin"
+    ? next()
+    : res.status(400).json({ message: "Not admin" });

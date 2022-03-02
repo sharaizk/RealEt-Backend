@@ -6,7 +6,7 @@ import config from "../config";
 const userSchema = new Schema(
   {
     fullName: { type: String, required: [true, "Full Name is required"] },
-    email: { type: String },
+    email: { type: String, lowercase: true },
     phoneNumber: {
       type: String,
     },
@@ -36,6 +36,7 @@ userSchema.pre("save", async function (next) {
   }
   this.password = await hash(this.password, 10);
 });
+
 // Compare user password
 userSchema.methods.comparePassword = async function (enteredPassword) {
   return await compare(enteredPassword, this.password);

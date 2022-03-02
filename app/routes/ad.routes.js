@@ -9,7 +9,7 @@ import {
 } from "../controllers/ad.controller";
 
 import multer from "multer";
-import { agentOrConsumer } from "../middlewares/roles.middleware";
+import { agentOrConsumer, isAdmin } from "../middlewares/roles.middleware";
 import { userAuth } from "../middlewares/auth.middleware";
 
 const upload = multer({ dest: "uploads/" });
@@ -39,18 +39,18 @@ router.get("/myAds", userAuth, myAds);
  * @param
  *Ad Id -id
  */
-router.delete("/remove/:id", userAuth, removeAd);
+router.delete("/remove/:id", userAuth, isAdmin, removeAd);
 
 /**
  * @param
  * Ad Id -id
  */
-router.put("/feature/:id", userAuth, featureProperty);
+router.put("/feature/:id", userAuth, isAdmin, featureProperty);
 
 /**
  *All Ads
  */
-router.get("/", userAuth, getAllAds);
+router.post("/list", userAuth, getAllAds);
 
 /**
  * @param id - Id of Ad

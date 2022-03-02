@@ -121,7 +121,7 @@ export const featureProperty = async (req, res) => {
  */
 export const getAllAds = async (req, res) => {
   try {
-    let ads = await Ad.find({ deleteFlag: false }).select("-userId");
+    let ads = await Ad.find(req.body?.query).select("-userId");
     return res.status(200).json({
       count: ads.length,
       data: ads,

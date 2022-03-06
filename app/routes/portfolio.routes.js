@@ -59,5 +59,5 @@ router.patch("/update/:id", userAuth, upload.array("photos"), editPortfolio);
 /**
  *All Portfolio
  */
-router.get("/", userAuth, getAllPortfolio);
+router.get("/list", getAllPortfolio);
 export default router;

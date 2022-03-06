@@ -171,7 +171,6 @@ export const verifyOTP = async (req, res) => {
 export const resetPassword = async (req, res) => {
   try {
     const { password, login } = req.body;
-    console.log(password, login);
 
     const loginType = getType(login);
     const user = await User.findOneAndUpdate(

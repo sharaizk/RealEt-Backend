@@ -6,6 +6,7 @@ import {
   authRoutes,
   geographyRoutes,
   portfolioRoute,
+  builderRoutes,
 } from ".";
 import {
   myProfile,
@@ -49,5 +50,7 @@ router.use("/portfolio", portfolioRoute);
 router.use("/geography", geographyRoutes);
 
 router.use("/admin", userAuth, isAdmin, adminRoutes);
+
+router.use("/builder", builderRoutes);
 
 export default router;

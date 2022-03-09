@@ -5,6 +5,7 @@ import {
   removePortfolio,
   editPortfolio,
   getAllPortfolio,
+  getAllPortfolioOfSingleBuilder,
 } from "../controllers/portfolio.controller";
 import multer from "multer";
 import { builderOrConsumer } from "../middlewares/roles.middleware";
@@ -61,3 +62,9 @@ router.patch("/update/:id", userAuth, upload.array("photos"), editPortfolio);
  */
 router.get("/list", getAllPortfolio);
 export default router;
+
+/**
+ * All Portfolio of a Single Builder
+ */
+
+router.get("/builder/:id", getAllPortfolioOfSingleBuilder);

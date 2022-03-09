@@ -146,3 +146,27 @@ export const getAllPortfolio = async (req, res) => {
     });
   }
 };
+
+/**
+ * This Function allows to Get All Builders
+ * @param {Request} req - request object
+ * @param {Response} res - response object
+ */
+export const getAllPortfolioOfSingleBuilder = async (req, res) => {
+  try {
+    let portfolio = await Portfolio.find({ deleteFlag: false })
+      .find({
+        userId: req.params.id,
+      })
+      .select("-userId");
+
+    return res.status(200).json({
+      count: portfolio.length,
+      data: portfolio,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+};

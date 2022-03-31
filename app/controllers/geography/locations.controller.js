@@ -25,3 +25,8 @@ export const getLocations = async (req, res) => {
       .json({ message: `INTERNAL SERVER ERROR: ${error.message}` });
   }
 };
+
+export const getAllLocations = (req, res) =>
+  Location.find({})
+    .populate("city_data")
+    .then((locations) => res.status(200).json({ locations }));

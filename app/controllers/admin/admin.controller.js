@@ -1,4 +1,4 @@
-import { Agent, Consumer, User, Ad } from "../../models";
+import { Agent, Consumer, User, Builder, Ad } from "../../models";
 import { Request, Response } from "express";
 import { uploadPhoto } from "../../libraries/multer";
 import { promisify } from "util";
@@ -33,17 +33,16 @@ export const updateAdmin = async (req, res) => {
 };
 
 /**
- * Send Record of users
+ * Send Record of users based on Role (Consumer, Agent, Builder)
  * @param {Request} req - request object
  * @param {Response} res - response object
  */
 export const getAllUsers = async (req, res) => {
   try {
-    res
-      .status(200)
-      .json({ data: await User.find(req.body.query).select("-password") });
+    const users = await Agent.find();
+    res.status(200).json({ data: users }).populate({ path: userId });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -55,9 +54,17 @@ export const getAllUsers = async (req, res) => {
 export const dashboardCounts = async (req, res) => {
   try {
     const consumers = await Consumer.countDocuments();
-    const activeAgents = await Agent.countDocuments({ status: true });
-    const pendingAgents = await Agent.countDocuments({ status: false });
-    res.status(200).json({ consumers, activeAgents, pendingAgents });
+    const activeAgents = await Agent.countDocuments({ status: "Verified" });
+    const pendingAgents = await Agent.countDocuments({ status: "Pending" });
+    const activeBuilders = await Builder.countDocuments({ status: "Verified" });
+    const pendingBuilders = await Builder.countDocuments({ status: "Pending" });
+    res.status(200).json({
+      consumers,
+      activeAgents,
+      pendingAgents,
+      activeBuilders,
+      pendingBuilders,
+    });
   } catch (error) {
     res
       .status(500)
@@ -72,23 +79,30 @@ export const dashboardCounts = async (req, res) => {
 export const roleUpdate = async (req, res) => {
   try {
     const { role, status } = req?.body;
+    console.log(req.params.userId);
     let adCredit = 3;
     let userAds = await Consumer.findOne({
       userId: req.params.userId,
     });
-    await roles[role].findOneAndUpdate(
-      { userId: req.params.userId },
-      {
-        ads: userAds.ads,
-        status,
-      }
-    );
+    console.log(userAds);
+    if (userAds) {
+      console.log("Inif");
+      await roles[role].findOneAndUpdate(
+        { userId: req.params.userId },
+        {
+          ads: userAds?.ads,
+          status,
+        }
+      );
+    }
     adCredit = role === "Agent" ? 10 : 3;
 
-    await User.findByIdAndUpdate(
+    const i = await User.findOneAndUpdate(
       { _id: req.params.userId },
-      { role, $inc: { adCredit } }
+      { role, $inc: { adCredit } },
+      { new: true }
     );
+    console.log(i);
     return res.status(200).json({ message: "Role updated successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -99,12 +113,10 @@ export const roleUpdate = async (req, res) => {
  * @param {Request} req - request object
  * @param {Response} res - response object
  */
-export const getPendingAds = async (req, res) => {
+export const getAllAds = async (req, res) => {
   try {
-    let pendingAds = await Ad.find({ status: "Pending" })
-      .select("-createdAt -updatedAt -__v")
-      .populate({ path: "userId" });
-    return res.status(200).json({ pendingAds: pendingAds });
+    let ads = await Ad.find(req.body.query).populate({ path: "userId" });
+    return res.status(200).json({ data: ads });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -115,27 +127,33 @@ export const getPendingAds = async (req, res) => {
  * @param {Request} req - request object
  * @param {Response} res - response object
  */
-export const approveAd = async (req, res) => {
+export const changeAdStatus = async (req, res) => {
   try {
     await Ad.findByIdAndUpdate(req.params.id, {
       status: req.body.status,
     });
-    return res.status(200).json({ message: "Ad Approved" });
+    return res.status(200).json({ message: `Ad ${req.body.status}` });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-/**
- * Get All Pending Agents
- * @param {Request} req - request object
- * @param {Response} res - response object
- */
-export const pendingAgents = async (req, res) => {
+
+export const getAgents = async (req, res) => {
   try {
-    const pendingAgents = await Agent.find({ status: "Pending" }).populate({
-      path: "userId",
+    return res.status(200).json({
+      data: await Agent.find(req.body.query).populate({ path: "userId" }),
     });
-    return res.status(200).json({ data: pendingAgents });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+export const getBuilders = async (req, res) => {
+  try {
+    return res.status(200).json({
+      data: await Builder.find(req.body.query).populate({ path: "userId" }),
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

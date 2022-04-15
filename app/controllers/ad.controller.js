@@ -69,7 +69,7 @@ export const myAds = async (req, res) => {
   try {
     const userId = req.user._id;
 
-    const ads = await Ad.find({ userId });
+    const ads = await Ad.find({ userId, status: req?.query?.status });
     res.status(200).json({ data: ads, count: ads.length });
   } catch (error) {
     return res.status(500).json({ message: error.message });

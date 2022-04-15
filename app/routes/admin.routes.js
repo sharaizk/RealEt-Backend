@@ -1,14 +1,15 @@
 import { Router } from "express";
 import multer from "multer";
-import { getAllAds } from "../controllers/ad.controller";
 import {
   getAllUsers,
   updateAdmin,
   dashboardCounts,
   roleUpdate,
   getPendingAds,
-  pendingAgents,
-  approveAd,
+  getAllAds,
+  getAgents,
+  changeAdStatus,
+  getBuilders
 } from "../controllers/admin/admin.controller";
 
 const router = Router();
@@ -22,6 +23,7 @@ router.patch("/update-profile", upload.single("photo"), updateAdmin);
 
 /**
  * Get All Users Lists
+ * @body - role
  */
 router.post("/users-list", getAllUsers);
 
@@ -44,12 +46,22 @@ router.patch("/update-role/:userId", roleUpdate);
 /**
  * Get All Pending Ads
  */
-router.get("/pending-ads", getPendingAds);
+router.get("/pending-ads", getAllAds);
 
 /**
  * Approve Pending Ads
  * @param {string} userId
  */
-router.patch("/approve/:id", approveAd);
+router.patch("/approve/:id", changeAdStatus);
+
+/**
+ * Get All Agents
+ */
+router.post("/agents", getAgents);
+
+/**
+ * Get All Builders
+ */
+ router.post("/builders", getBuilders);
 
 export default router;

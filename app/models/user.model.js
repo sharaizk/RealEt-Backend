@@ -18,8 +18,8 @@ const userSchema = new Schema(
     socialId: { type: String },
     role: {
       type: String,
-      enum: ["Consumer", "Agent", "Builder", "Admin"],
-      default: "Consumer",
+      enum: ["consumer", "agent", "builder", "admin"],
+      default: "consumer",
     },
     otp: {
       status: { type: String, default: null },

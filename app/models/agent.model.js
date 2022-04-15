@@ -12,8 +12,8 @@ const agentSchema = new Schema(
     ads: [Types.ObjectId],
     status: {
       type: String,
-      default: "Pending",
-      enum: ["Pending", "Approved", "Rejected"],
+      default: "pending",
+      enum: ["pending", "verified", "rejected"],
     },
   },
 

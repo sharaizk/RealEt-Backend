@@ -6,3 +6,4 @@ export { default as Ad } from "./ad.model";
 export { default as Portfolio } from "./portfolio.model";
 export { default as Cities } from "./cities.model";
 export { default as Location } from "./location.model";
+export { default as Material} from "./material.model";

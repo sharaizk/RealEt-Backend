@@ -12,8 +12,8 @@ const builderSchema = new Schema(
     portfolio: [Types.ObjectId],
     status: {
       type: String,
-      default: "Pending",
-      enum: ["Pending", "Approved", "Rejected"],
+      default: "pending",
+      enum: ["pending", "verified", "rejected"],
     },
     officeContact: { type: String },
   },

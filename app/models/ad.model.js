@@ -18,8 +18,8 @@ const adSchema = new Schema(
     },
     propertyIntent: {
       type: String,
-      enum: ["Sell", "Rent"],
-      default: "Sell",
+      enum: ["sell", "rent"],
+      default: "sell",
     },
     info: {
       price: { type: String, required: [true, "Price is required"] },

@@ -115,7 +115,10 @@ export const roleUpdate = async (req, res) => {
  */
 export const getAllAds = async (req, res) => {
   try {
-    let ads = await Ad.find(req.body.query).populate({ path: "userId",sselect: "-otp -email -password -createdAt -updatedAt -__v", });
+    let ads = await Ad.find(req.body.query).populate({
+      path: "userId",
+      sselect: "-otp -email -password -createdAt -updatedAt -__v",
+    });
     return res.status(200).json({ data: ads });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -141,18 +144,23 @@ export const changeAdStatus = async (req, res) => {
 export const getAgents = async (req, res) => {
   try {
     return res.status(200).json({
-      data: await Agent.find(req.body.query).populate({ path: "userId",select: "-otp -email -password -createdAt -updatedAt -__v",}),
+      data: await Agent.find(req.body.query).populate({
+        path: "userId",
+        select: "-otp -email -password -createdAt -updatedAt -__v",
+      }),
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-
 export const getBuilders = async (req, res) => {
   try {
     return res.status(200).json({
-      data: await Builder.find(req.body.query).populate({ path: "userId",select: "-otp -email -password -createdAt -updatedAt -__v",}),
+      data: await Builder.find(req.body.query).populate({
+        path: "userId",
+        select: "-otp -email -password -createdAt -updatedAt -__v",
+      }),
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

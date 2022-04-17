@@ -70,7 +70,11 @@ export const myAds = async (req, res) => {
     const userId = req.user._id;
 
     const ads = await Ad.find({ userId, status: req?.query?.status });
-    res.status(200).json({ data: ads, count: ads.length });
+    if (req?.query?.count === "true") {
+      res.status(200).json({ count: ads.length });
+    } else {
+      res.status(200).json({ data: ads, count: ads.length });
+    }
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }

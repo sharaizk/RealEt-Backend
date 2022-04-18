@@ -68,6 +68,7 @@ export const postAd = async (req, res) => {
 export const myAds = async (req, res) => {
   try {
     const userId = req.user._id;
+<<<<<<< HEAD
     const { count, status } = req.query;
     if (count) {
       const ListedAdsCount = await Ad.countDocuments({ userId });
@@ -87,6 +88,19 @@ export const myAds = async (req, res) => {
     }
     const ads = await Ad.find({ userId, status: status });
     res.status(200).json({ data: ads, count: ads.length });
+=======
+
+    if (req?.query?.count === "true") {
+      const ads = await Ad.countDocuments({
+        userId,
+        status: req?.query?.status,
+      });
+      res.status(200).json({ count: ads.length });
+    } else {
+      const ads = await Ad.find({ userId, status: req?.query?.status });
+      res.status(200).json({ data: ads, count: ads.length });
+    }
+>>>>>>> 170a89a91bc07501a40e6715a4273515e7fa2210
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -163,7 +177,7 @@ export const getAllAds = async (req, res) => {
       })
         .select("-createdAt -updatedAt -__v -featuredInfo -deleteFlag")
         .populate({
-          path: "userId",
+          path: "userId location_data city_data",
           select: "-otp -email -password -createdAt -updatedAt -__v",
         }),
       req.query
@@ -228,10 +242,12 @@ export const getSingleAd = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const singleListedProperty = await Ad.findOne({ _id: id }).populate({
-      path: "userId",
-      select: "fullName profileImage role _id email",
-    });
+    const singleListedProperty = await Ad.findOne({ _id: id })
+      .populate({
+        path: "userId",
+        select: "fullName profileImage role _id email",
+      })
+      .populate("location_data city_data");
 
     return res.status(200).json({
       data: singleListedProperty,

@@ -1,15 +1,14 @@
 import { Router } from "express";
 import multer from "multer";
 import {
-  getAllUsers,
-  updateAdmin,
-  dashboardCounts,
-  roleUpdate,
-  getPendingAds,
-  getAllAds,
-  getAgents,
   changeAdStatus,
-  getBuilders
+  dashboardCounts,
+  getAgents,
+  getAllAds,
+  getAllUsers,
+  getBuilders,
+  roleUpdate,
+  updateAdmin,
 } from "../controllers/admin/admin.controller";
 
 const router = Router();
@@ -62,6 +61,6 @@ router.post("/agents", getAgents);
 /**
  * Get All Builders
  */
- router.post("/builders", getBuilders);
+router.post("/builders", getBuilders);
 
 export default router;

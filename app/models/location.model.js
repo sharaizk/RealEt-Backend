@@ -14,6 +14,7 @@ locationSchema.virtual("city_data", {
   ref: "Cities",
   localField: "city",
   foreignField: "key",
+  justOne: true,
 });
 
 const Location = model("Location", locationSchema, "locations");

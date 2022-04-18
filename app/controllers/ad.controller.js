@@ -68,8 +68,24 @@ export const postAd = async (req, res) => {
 export const myAds = async (req, res) => {
   try {
     const userId = req.user._id;
-
-    const ads = await Ad.find({ userId, status: req?.query?.status });
+    const { count, status } = req.query;
+    if (count) {
+      const ListedAdsCount = await Ad.countDocuments({ userId });
+      const NonListedAdsCount = await Ad.countDocuments({
+        userId,
+        status: { $ne: "approved" },
+      });
+      const UnApprovedCount = await Ad.countDocuments({
+        userId,
+        status: "unapproved",
+      });
+      return res.status(200).json({
+        listed: ListedAdsCount,
+        nonListed: NonListedAdsCount,
+        unApproved: UnApprovedCount,
+      });
+    }
+    const ads = await Ad.find({ userId, status: status });
     res.status(200).json({ data: ads, count: ads.length });
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -134,6 +150,7 @@ export const featureProperty = async (req, res) => {
 export const getAllAds = async (req, res) => {
   try {
     const { city, location, propertySubType, propertyIntent } = req.query;
+    console.log(propertySubType);
 
     // ====== || Created A class with ability to paginate or sort || ======
     let ads = await new ApiFeatures(
@@ -160,7 +177,6 @@ export const getAllAds = async (req, res) => {
       propertySubType,
       status: "approved",
     }).exec();
-
     return res.status(200).json({
       count: totalAdsFoundCount,
       data: ads,

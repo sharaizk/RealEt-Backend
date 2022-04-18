@@ -6,6 +6,7 @@ import {
   featureProperty,
   getAllAds,
   editAd,
+  getSingleAd,
 } from "../controllers/ad.controller";
 
 import multer from "multer";
@@ -69,6 +70,9 @@ router.get("/list", getAllAds);
  * type
  * info - {price, coords, societyName, city province, size,type}
  */
+
+router.get("/single-property/:id", getSingleAd);
+
 router.put("/update/:id", userAuth, upload.array("photos"), editAd);
 
 export default router;

@@ -46,6 +46,11 @@ const adSchema = new Schema(
   },
   { timestamps: true }
 );
-
+adSchema.virtual("city_data", {
+  ref: "Cities",
+  localField: "city",
+  foreignField: "key",
+  justOne: true,
+});
 const Ad = model("Ad", adSchema);
 export default Ad;

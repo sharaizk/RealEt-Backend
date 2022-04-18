@@ -7,9 +7,10 @@ const materialModel = new Schema(
     firstClassPrice: { type: Number },
     secondClassPrice: { type: Number },
     thirdClassPrice: { type: Number },
+    priceStandard: { type: String },
   },
   { timestamps: true }
 );
 
-const material = model("Material", materialModel);
-export default material;
+const Material = model("Material", materialModel);
+export default Material;

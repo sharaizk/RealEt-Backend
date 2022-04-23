@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import fs from "fs";
+import fs, { stat } from "fs";
 import { promisify } from "util";
 import { uploadPhoto } from "../libraries/multer";
 import { Ad } from "../models";
@@ -68,9 +68,8 @@ export const postAd = async (req, res) => {
 export const myAds = async (req, res) => {
   try {
     const userId = req.user._id;
-<<<<<<< HEAD
     const { count, status } = req.query;
-    if (count) {
+    if (count === "true") {
       const ListedAdsCount = await Ad.countDocuments({ userId });
       const NonListedAdsCount = await Ad.countDocuments({
         userId,
@@ -86,21 +85,13 @@ export const myAds = async (req, res) => {
         unApproved: UnApprovedCount,
       });
     }
-    const ads = await Ad.find({ userId, status: status });
+    const ads = await Ad.find(
+      { userId, status: status },
+      { title: 1, type: 1, propertyIntent: 1, location: 1, city: 1, status: 1 }
+    ).populate({
+      path: "location_data city_data",
+    });
     res.status(200).json({ data: ads, count: ads.length });
-=======
-
-    if (req?.query?.count === "true") {
-      const ads = await Ad.countDocuments({
-        userId,
-        status: req?.query?.status,
-      });
-      res.status(200).json({ count: ads.length });
-    } else {
-      const ads = await Ad.find({ userId, status: req?.query?.status });
-      res.status(200).json({ data: ads, count: ads.length });
-    }
->>>>>>> 170a89a91bc07501a40e6715a4273515e7fa2210
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -164,7 +155,6 @@ export const featureProperty = async (req, res) => {
 export const getAllAds = async (req, res) => {
   try {
     const { city, location, propertySubType, propertyIntent } = req.query;
-    console.log(propertySubType);
 
     // ====== || Created A class with ability to paginate or sort || ======
     let ads = await new ApiFeatures(

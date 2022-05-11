@@ -146,7 +146,7 @@ export const getAllAds = async (req, res) => {
         location,
         propertyIntent,
         propertySubType,
-        status: "Approved",
+        status: "approved",
       })
         .select("-createdAt -updatedAt -__v -featuredInfo -deleteFlag")
         .populate({
@@ -162,6 +162,7 @@ export const getAllAds = async (req, res) => {
       city,
       location,
       propertySubType,
+      status: "approved",
     }).exec();
 
     return res.status(200).json({
@@ -205,6 +206,26 @@ export const editAd = async (req, res) => {
       ...({ ad } && { ad }),
     });
   } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+export const getSingleAd = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const singleListedProperty = await Ad.findOne({ _id: id }).populate({
+      path: "userId",
+      select: "fullName profileImage role _id email",
+    });
+
+    return res.status(200).json({
+      data: singleListedProperty,
+    });
+  } catch (error) {
+    console.log(error);
     return res.status(500).json({
       message: error.message,
     });

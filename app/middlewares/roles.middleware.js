@@ -30,6 +30,6 @@ export const builderOrConsumer = async (req, res, next) => {
 };
 
 export const isAdmin = (req, res, next) =>
-  req.user.role === "Admin"
+  req.user.role === "admin"
     ? next()
     : res.status(400).json({ message: "Not admin" });

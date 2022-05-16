@@ -21,6 +21,11 @@ const userSchema = new Schema(
       enum: ["consumer", "agent", "builder", "admin"],
       default: "consumer",
     },
+    secondaryRole: {
+      type: String,
+      enum: ["consumer", "agent", "builder", null],
+      default: null,
+    },
     otp: {
       status: { type: String, default: null },
       code: { type: Number },

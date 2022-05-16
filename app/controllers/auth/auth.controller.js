@@ -47,7 +47,7 @@ export const userSignup = async (req, res, next) => {
   const unlinkFile = promisify(fs.unlink);
 
   try {
-    let { fullName, login, password, role = "Consumer" } = req?.body;
+    let { fullName, login, password, role = "consumer" } = req?.body;
     const image = req.file;
     const result = await uploadPhoto(image);
     await unlinkFile(image.path);

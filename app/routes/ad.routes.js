@@ -14,7 +14,7 @@ import { agentOrConsumer, isAdmin } from "../middlewares/roles.middleware";
 import { userAuth } from "../middlewares/auth.middleware";
 import { subtractAdCredit } from "../middlewares/credits.middleware";
 
-const upload = multer({ dest: "uploads/" });
+const upload = multer({ dest: "uploads/",limits: { fieldSize: 25 * 1024 * 1024 } });
 
 const router = Router();
 
@@ -34,7 +34,7 @@ router.post(
   userAuth,
   agentOrConsumer,
   upload.array("photos"),
-  subtractAdCredit,
+  // subtractAdCredit,
   postAd
 );
 

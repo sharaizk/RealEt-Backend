@@ -9,7 +9,7 @@ import { NextFunction, Request, Response } from "express";
 export const agentOrConsumer = async (req, res, next) => {
   try {
     const { role } = req.user;
-    if (role !== "Agent" && role !== "Consumer") {
+    if (role !== "agent" && role !== "consumer") {
       return res.status(401).json({ message: "Unauthorized" });
     }
     next();

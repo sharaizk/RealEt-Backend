@@ -25,6 +25,7 @@ export const postAd = async (req, res) => {
       info,
       city,
       location,
+      virtualTour={}
     } = req?.body;
     let photos = [];
     const passedInfo = JSON.parse(info);
@@ -33,24 +34,30 @@ export const postAd = async (req, res) => {
       photos.push(result.Location);
       await unlinkFile(file[i].path);
     }
-    const ad = await Ad.create({
-      userId: req.user._id,
-      title,
-      photos,
-      description,
-      type,
-      propertyIntent,
-      propertySubType,
-      info: passedInfo,
-      city,
-      location,
-    });
-    ad.save();
-    await roles[req.user.role].findOneAndUpdate(
-      { userId: req.user._id },
-      { $push: { ads: ad._id } },
-      { new: true }
-    );
+
+    if (Object.keys(virtualTour).length != 0) {
+      console.log(virtualTour)      
+    }
+
+
+    // const ad = await Ad.create({
+    //   userId: req.user._id,
+    //   title,
+    //   photos,
+    //   description,
+    //   type,
+    //   propertyIntent,
+    //   propertySubType,
+    //   info: passedInfo,
+    //   city,
+    //   location,
+    // });
+    // ad.save();
+    // await roles[req.user.role].findOneAndUpdate(
+    //   { userId: req.user._id },
+    //   { $push: { ads: ad._id } },
+    //   { new: true }
+    // );
     return res.status(202).json({
       message: "Ad Posted Successfully",
     });

@@ -44,6 +44,7 @@ export const userLogin = async (req, res) => {
  * @param {NextFunction} next - Next Function
  */
 export const userSignup = async (req, res, next) => {
+  console.log('s')
   const unlinkFile = promisify(fs.unlink);
 
   try {

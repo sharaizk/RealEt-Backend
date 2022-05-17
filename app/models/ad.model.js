@@ -5,7 +5,9 @@ const adSchema = new Schema(
     userId: { type: Types.ObjectId, ref: "User" },
     title: { type: String, required: [true, "Title is required"] },
     photos: [{ type: String }],
-    virtualTour: [{}],
+    virtualTour: [
+      { type: Object }
+    ],
     description: { type: String },
     type: { type: String, required: [true, "Property type is required"] }, //Plot or House or Plaza
     propertyIntent: {

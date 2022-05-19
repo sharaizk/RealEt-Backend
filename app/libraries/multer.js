@@ -43,11 +43,27 @@ export const uploadPhoto = (file) => {
   return s3.upload(uploadParams).promise();
 };
 
-export const uploadBase64 = (sceneName, base64file) => {
-  const uploadParams = {
-    Bucket:config.AWSBucket,
-    Body: base64file,
-    Key: sceneName + '-imageSource'
+function dataURItoBlob(dataURI) {
+  var binary = atob(dataURI.split(",")[1]);
+  var array = [];
+  for (var i = 0; i < binary.length; i++) {
+    array.push(binary.charCodeAt(i));
   }
-  return s3.upload(uploadParams).promise()
+  return new Blob([new Uint8Array(array)], { type: "image/jpeg" });
 }
+
+export const uploadBase64 = (sceneName, base64file) => {
+  const base64Data = new Buffer.from(
+    base64file.replace(/^data:image\/\w+;base64,/, ""),
+    "base64"
+  );
+  const type = base64file.split(";")[0].split("/")[1];
+  const uploadParams = {
+    Bucket: config.AWSBucket,
+    Body: base64Data,
+    Key: sceneName + "-imageSource",
+    ContentEncoding: "base64",
+    ContentType: `image/${type}`,
+  };
+  return s3.upload(uploadParams).promise();
+};

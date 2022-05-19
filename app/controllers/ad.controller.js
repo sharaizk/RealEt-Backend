@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import fs from "fs";
+import fs, { stat } from "fs";
 import { promisify } from "util";
-import { uploadPhoto } from "../libraries/multer";
+import { uploadPhoto,uploadBase64 } from "../libraries/multer";
 import { Ad } from "../models";
 import { ApiFeatures } from "../utils/ApiFeatures";
 import roles from "../config/roles";
@@ -25,14 +25,32 @@ export const postAd = async (req, res) => {
       info,
       city,
       location,
+      virtualTour
     } = req?.body;
     let photos = [];
     const passedInfo = JSON.parse(info);
+    const parsedVirtualTour = JSON.parse(virtualTour)
+    let finalVirtualTour = []
+    // Only if there are values in the virtualTour
+    if (Object.keys(parsedVirtualTour).length != 0) {
+      // Waiting for loop to finish
+      await Promise.all(
+        parsedVirtualTour.map(async (vTour, i) => {
+          const sceneName = Object.keys(vTour)[0] 
+          const imageSource = await uploadBase64(sceneName,vTour[Object.keys(vTour)[0]].imageSource)
+          const hotSpots = vTour[Object.keys(vTour)[0]]?.hotSpots
+          finalVirtualTour.push({sceneName,imageSource:imageSource.Location,hotSpots})
+        })
+      )
+    }
     for (let i = 0; i < file.length; i++) {
       const result = await uploadPhoto(file[i]);
       photos.push(result.Location);
       await unlinkFile(file[i].path);
     }
+
+
+
     const ad = await Ad.create({
       userId: req.user._id,
       title,
@@ -44,6 +62,7 @@ export const postAd = async (req, res) => {
       info: passedInfo,
       city,
       location,
+      virtualTour:finalVirtualTour
     });
     ad.save();
     await roles[req.user.role].findOneAndUpdate(
@@ -68,13 +87,30 @@ export const postAd = async (req, res) => {
 export const myAds = async (req, res) => {
   try {
     const userId = req.user._id;
-
-    const ads = await Ad.find({ userId, status: req?.query?.status });
-    if (req?.query?.count === "true") {
-      res.status(200).json({ count: ads.length });
-    } else {
-      res.status(200).json({ data: ads, count: ads.length });
+    const { count, status } = req.query;
+    if (count === "true") {
+      const ListedAdsCount = await Ad.countDocuments({ userId });
+      const NonListedAdsCount = await Ad.countDocuments({
+        userId,
+        status: { $ne: "approved" },
+      });
+      const UnApprovedCount = await Ad.countDocuments({
+        userId,
+        status: "unapproved",
+      });
+      return res.status(200).json({
+        listed: ListedAdsCount,
+        nonListed: NonListedAdsCount,
+        unApproved: UnApprovedCount,
+      });
     }
+    const ads = await Ad.find(
+      { userId, status: status },
+      { title: 1, type: 1, propertyIntent: 1, location: 1, city: 1, status: 1 }
+    ).populate({
+      path: "location_data city_data",
+    });
+    res.status(200).json({ data: ads, count: ads.length });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -150,7 +186,7 @@ export const getAllAds = async (req, res) => {
       })
         .select("-createdAt -updatedAt -__v -featuredInfo -deleteFlag")
         .populate({
-          path: "userId",
+          path: "userId location_data city_data",
           select: "-otp -email -password -createdAt -updatedAt -__v",
         }),
       req.query
@@ -164,7 +200,6 @@ export const getAllAds = async (req, res) => {
       propertySubType,
       status: "approved",
     }).exec();
-
     return res.status(200).json({
       count: totalAdsFoundCount,
       data: ads,
@@ -216,10 +251,12 @@ export const getSingleAd = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const singleListedProperty = await Ad.findOne({ _id: id }).populate({
-      path: "userId",
-      select: "fullName profileImage role _id email",
-    });
+    const singleListedProperty = await Ad.findOne({ _id: id })
+      .populate({
+        path: "userId",
+        select: "fullName profileImage role _id email",
+      })
+      .populate("location_data city_data");
 
     return res.status(200).json({
       data: singleListedProperty,

@@ -5,7 +5,9 @@ const adSchema = new Schema(
     userId: { type: Types.ObjectId, ref: "User" },
     title: { type: String, required: [true, "Title is required"] },
     photos: [{ type: String }],
-    virtualTour: [{}],
+    virtualTour: [
+      { type: Object }
+    ],
     description: { type: String },
     type: { type: String, required: [true, "Property type is required"] }, //Plot or House or Plaza
     propertyIntent: {
@@ -31,8 +33,8 @@ const adSchema = new Schema(
       size: { type: String, required: [true, "Property Size is required"] },
       unit: { type: String, required: [true, "Unit is required"] }, //Marla Kanal
     },
-    city: { type: Number, ref: "Cities", field: "key" },
-    location: { type: Number, ref: "locations" },
+    city: { type: Number, ref: "Cities" },
+    location: { type: Number, ref: "Location" },
     deleteFlag: { type: Boolean, default: false },
     featuredInfo: {
       isFeatured: { type: Boolean, default: false },
@@ -44,11 +46,17 @@ const adSchema = new Schema(
       enum: ["pending", "approved", "flagged"],
     },
   },
-  { timestamps: true }
+  { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
 adSchema.virtual("city_data", {
   ref: "Cities",
   localField: "city",
+  foreignField: "key",
+  justOne: true,
+});
+adSchema.virtual("location_data", {
+  ref: "Location",
+  localField: "location",
   foreignField: "key",
   justOne: true,
 });

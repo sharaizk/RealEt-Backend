@@ -9,6 +9,7 @@ import {
   builderRoutes,
   agentRoutes,
   materialRoutes,
+  userRoutes,
 } from ".";
 import {
   myProfile,
@@ -58,5 +59,7 @@ router.use("/builder", builderRoutes);
 router.use("/agent", agentRoutes);
 
 router.use("/material", userAuth, isAdmin, materialRoutes);
+
+router.use("/user", userAuth, userRoutes);
 
 export default router;

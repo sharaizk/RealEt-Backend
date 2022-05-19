@@ -42,3 +42,12 @@ export const uploadPhoto = (file) => {
   };
   return s3.upload(uploadParams).promise();
 };
+
+export const uploadBase64 = (sceneName, base64file) => {
+  const uploadParams = {
+    Bucket:config.AWSBucket,
+    Body: base64file,
+    Key: sceneName + '-imageSource'
+  }
+  return s3.upload(uploadParams).promise()
+}

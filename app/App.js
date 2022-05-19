@@ -17,7 +17,6 @@ middlewares(app);
 // Running API Routes
 app.use("/api", apiRouter);
 
-
 //
 app.use("/", express.static(path.join(__dirname, "../client/build")));
 app.get("/*", (req, res) =>
@@ -29,4 +28,3 @@ app.listen(config.PORT, () => {
   console.log("✓", `Listening on port ${config.PORT}`);
 });
 database();
-

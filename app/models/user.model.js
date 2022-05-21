@@ -12,7 +12,7 @@ const userSchema = new Schema(
     },
     password: {
       type: String,
-      required: [true, "A password is required to signup"],
+      default:""
     },
     profileImage: { type: String },
     socialId: { type: String },

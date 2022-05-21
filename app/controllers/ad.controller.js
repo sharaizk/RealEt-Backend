@@ -42,7 +42,6 @@ export const postAd = async (req, res) => {
             vTour[Object.keys(vTour)[0]].imageSource
           );
           const hotSpots = vTour[Object.keys(vTour)[0]]?.hotSpots;
-          console.log(imageSource.Location);
           finalVirtualTour.push({
             sceneName,
             imageSource: imageSource.Location,
@@ -51,31 +50,31 @@ export const postAd = async (req, res) => {
         })
       );
     }
-    // for (let i = 0; i < file.length; i++) {
-    //   const result = await uploadPhoto(file[i]);
-    //   photos.push(result.Location);
-    //   await unlinkFile(file[i].path);
-    // }
+    for (let i = 0; i < file.length; i++) {
+      const result = await uploadPhoto(file[i]);
+      photos.push(result.Location);
+      await unlinkFile(file[i].path);
+    }
 
-    // const ad = await Ad.create({
-    //   userId: req.user._id,
-    //   title,
-    //   photos,
-    //   description,
-    //   type,
-    //   propertyIntent,
-    //   propertySubType,
-    //   info: passedInfo,
-    //   city,
-    //   location,
-    //   virtualTour: finalVirtualTour,
-    // });
-    // ad.save();
-    // await roles[req.user.role].findOneAndUpdate(
-    //   { userId: req.user._id },
-    //   { $push: { ads: ad._id } },
-    //   { new: true }
-    // );
+    const ad = await Ad.create({
+      userId: req.user._id,
+      title,
+      photos,
+      description,
+      type,
+      propertyIntent,
+      propertySubType,
+      info: passedInfo,
+      city,
+      location,
+      virtualTour: finalVirtualTour,
+    });
+    ad.save();
+    await roles[req.user.role].findOneAndUpdate(
+      { userId: req.user._id },
+      { $push: { ads: ad._id } },
+      { new: true }
+    );
     return res.status(202).json({
       message: "Ad Posted Successfully",
     });

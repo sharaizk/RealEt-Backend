@@ -79,7 +79,6 @@ export const postAd = async (req, res) => {
       message: "Ad Posted Successfully",
     });
   } catch (error) {
-    console.log(error);
     return res.status(500).json({ message: error.message });
   }
 };
@@ -92,7 +91,7 @@ export const postAd = async (req, res) => {
 export const myAds = async (req, res) => {
   try {
     const userId = req.user._id;
-    const { count, status } = req.query;
+    const { count, status,status2="" } = req.query;
     if (count === "true") {
       const ListedAdsCount = await Ad.countDocuments({ userId });
       const NonListedAdsCount = await Ad.countDocuments({
@@ -109,13 +108,18 @@ export const myAds = async (req, res) => {
         unApproved: UnApprovedCount,
       });
     }
-    const ads = await Ad.find(
-      { userId, status: status },
-      { title: 1, type: 1, propertyIntent: 1, location: 1, city: 1, status: 1 }
-    ).populate({
-      path: "location_data city_data",
-    });
-    res.status(200).json({ data: ads, count: ads.length });
+    const ads = await new ApiFeatures(
+      Ad.find(
+        { userId, status: {$in:[status,status2]},},
+        { title: 1, type: 1, propertyIntent: 1, location: 1, city: 1, status: 1 }
+      ).populate({
+        path: "location_data city_data",
+      }),
+      req.query
+    )
+      .pagination().query
+    const totalAds = await Ad.countDocuments({ userId, status: { $in: [status, status2] } }).exec()
+    res.status(200).json({ data: ads, totalAds: totalAds });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }

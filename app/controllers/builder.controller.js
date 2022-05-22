@@ -57,6 +57,7 @@ export const becomeABuilder = async (req, res) => {
         "We have received your application for verification. Verification process takes 24 to 48 hours",
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ message: error.message });
   }
 };

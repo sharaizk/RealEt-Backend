@@ -15,6 +15,7 @@ const agentSchema = new Schema(
       default: "pending",
       enum: ["pending", "verified", "rejected"],
     },
+    officeContact: { type: String },
   },
 
   { timestamps: true }

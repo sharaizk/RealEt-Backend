@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import fs, { stat } from "fs";
 import { promisify } from "util";
-import { uploadPhoto,uploadBase64 } from "../libraries/multer";
+import { uploadPhoto, uploadBase64 } from "../libraries/multer";
 import { Ad } from "../models";
 import { ApiFeatures } from "../utils/ApiFeatures";
 import roles from "../config/roles";
@@ -25,31 +25,36 @@ export const postAd = async (req, res) => {
       info,
       city,
       location,
-      virtualTour
+      virtualTour,
     } = req?.body;
     let photos = [];
     const passedInfo = JSON.parse(info);
-    const parsedVirtualTour = JSON.parse(virtualTour)
-    let finalVirtualTour = []
+    const parsedVirtualTour = JSON.parse(virtualTour);
+    let finalVirtualTour = [];
     // Only if there are values in the virtualTour
     if (Object.keys(parsedVirtualTour).length != 0) {
       // Waiting for loop to finish
       await Promise.all(
         parsedVirtualTour.map(async (vTour, i) => {
-          const sceneName = Object.keys(vTour)[0] 
-          const imageSource = await uploadBase64(sceneName,vTour[Object.keys(vTour)[0]].imageSource)
-          const hotSpots = vTour[Object.keys(vTour)[0]]?.hotSpots
-          finalVirtualTour.push({sceneName,imageSource:imageSource.Location,hotSpots})
+          const sceneName = Object.keys(vTour)[0];
+          const imageSource = await uploadBase64(
+            sceneName,
+            vTour[Object.keys(vTour)[0]].imageSource
+          );
+          const hotSpots = vTour[Object.keys(vTour)[0]]?.hotSpots;
+          finalVirtualTour.push({
+            sceneName,
+            imageSource: imageSource.Location,
+            hotSpots,
+          });
         })
-      )
+      );
     }
     for (let i = 0; i < file.length; i++) {
       const result = await uploadPhoto(file[i]);
       photos.push(result.Location);
       await unlinkFile(file[i].path);
     }
-
-
 
     const ad = await Ad.create({
       userId: req.user._id,
@@ -62,7 +67,7 @@ export const postAd = async (req, res) => {
       info: passedInfo,
       city,
       location,
-      virtualTour:finalVirtualTour
+      virtualTour: finalVirtualTour,
     });
     ad.save();
     await roles[req.user.role].findOneAndUpdate(

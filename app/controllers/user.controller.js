@@ -24,21 +24,31 @@ export const roleSwitch = async (req, res) => {
         builder: ["consumer", "agent"],
       };
     }
-
-    const newRoles = combinations[req.user.role];
-    if (!roles.includes(role))
-      return res.status(401).json({ message: "Incorrect Role" });
-    if (!newRoles.includes(role))
-      return res
-        .status(401)
-        .json({ message: "This role switch is not permitted" });
-    const user = await User.findOneAndUpdate(
-      { _id },
-      {
-        $set: { role, secondaryRole: req.user.role },
-      },
-      { new: true }
-    );
+    let user = {};
+    if (req.user.role === "consumer" && role === "agent") {
+      user = await User.findOneAndUpdate(
+        { _id },
+        {
+          $set: { role: "agent", secondaryRole: null },
+        },
+        { new: true }
+      );
+    } else {
+      const newRoles = combinations[req.user.role];
+      if (!roles.includes(role))
+        return res.status(401).json({ message: "Incorrect Role" });
+      if (!newRoles.includes(role))
+        return res
+          .status(401)
+          .json({ message: "This role switch is not permitted" });
+      user = await User.findOneAndUpdate(
+        { _id },
+        {
+          $set: { role, secondaryRole: req.user.role },
+        },
+        { new: true }
+      );
+    }
     res.status(201).json({ message: "Updated Role", user });
   } catch (error) {
     res.status(500).json({ message: error.message });

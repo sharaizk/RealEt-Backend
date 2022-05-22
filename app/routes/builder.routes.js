@@ -1,7 +1,7 @@
 import { Router } from "express";
 import {
   getBuilders,
-  getSingleBuilder,
+  builderProfile,
   becomeABuilder,
 } from "../controllers/builder.controller";
 import { userAuth } from "../middlewares/auth.middleware";
@@ -16,9 +16,9 @@ const router = Router();
 router.get("/", getBuilders);
 
 /**
- * To Get a Single Builder
+ * Get Agent Profile
  */
-router.get("/single/:id", getSingleBuilder);
+router.get("/profile", userAuth, builderProfile);
 
 /**
  * To Become a Builder

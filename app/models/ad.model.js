@@ -5,9 +5,7 @@ const adSchema = new Schema(
     userId: { type: Types.ObjectId, ref: "User" },
     title: { type: String, required: [true, "Title is required"] },
     photos: [{ type: String }],
-    virtualTour: [
-      { type: Object }
-    ],
+    virtualTour: [{ type: Object }],
     description: { type: String },
     type: { type: String, required: [true, "Property type is required"] }, //Plot or House or Plaza
     propertyIntent: {
@@ -45,6 +43,7 @@ const adSchema = new Schema(
       default: "pending",
       enum: ["pending", "approved", "flagged"],
     },
+    message: { type: String },
   },
   { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );

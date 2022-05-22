@@ -33,3 +33,14 @@ export const becomeAnAgent = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
+export const agentProfile = async (req, res) => {
+  try {
+    const agent = Agent.findOne({ _id: req.user.id }).populate({
+      path: "userId",
+      select: "-password",
+    });
+    return res.status(200).json({ agent });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};

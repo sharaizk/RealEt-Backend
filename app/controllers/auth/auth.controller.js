@@ -18,9 +18,9 @@ export const userLogin = async (req, res) => {
     if (!user) {
       return res
         .status(404)
-        .json({ message: "User Not exists, please Signup First" });
+        .json({ message: "User doesn't exist, please Signup First" });
     }
-    if (!(await user?.comparePassword(password))) {
+    if (getType(login) !== 'socialId' && !(await user?.comparePassword(password))) {
       return res.status(401).json({
         status: "Unauthorized",
         message: `${[getType(login)]}/Password does not match`,
@@ -44,7 +44,6 @@ export const userLogin = async (req, res) => {
  * @param {NextFunction} next - Next Function
  */
 export const userSignup = async (req, res, next) => {
-  console.log('s')
   const unlinkFile = promisify(fs.unlink);
 
   try {
@@ -90,6 +89,39 @@ export const userSignup = async (req, res, next) => {
  * @param {Request} req - request object
  * @param {Response} res - response object
  */
+
+export const oAuthSignup = async (req, res,next) => {
+  try {
+    const { email, fullName, socialId, socialImage, role = "consumer" } = req.body
+    
+    if (await userExists('email', email)) {
+      return res
+        .status(400)
+        .json({ message: `User already exists on this email, please Login` });
+    }
+
+    if (await userExists('socialId', socialId)) {
+      return res
+        .status(400)
+        .json({ message: `User already exists on this Google Account, please Login` });
+    }
+
+    const user = await User.create({
+      fullName: fullName,
+      email: email,
+      socialId: socialId,
+      profileImage: socialImage,
+      role:role
+    })
+    user.save();
+    req.user=user
+    next()
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ message: error.message });
+  }
+}
+
 export const roleSignup = async (req, res) => {
   try {
     const { role, _id } = req?.user;

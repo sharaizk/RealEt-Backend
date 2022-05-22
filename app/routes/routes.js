@@ -15,6 +15,7 @@ import {
   myProfile,
   roleSignup,
   userSignup,
+  oAuthSignup
 } from "../controllers/auth/auth.controller";
 import { userAuth } from "../middlewares/auth.middleware";
 import { isAdmin } from "../middlewares/roles.middleware";
@@ -40,6 +41,8 @@ router.post(
   userSignup,
   roleSignup
 );
+
+router.post("/auth/oauth-signup",oAuthSignup,roleSignup)
 
 router.get("/auth/my-profile", userAuth, myProfile);
 

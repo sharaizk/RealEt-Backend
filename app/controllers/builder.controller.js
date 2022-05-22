@@ -19,12 +19,13 @@ export const getBuilders = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
-export const getSingleBuilder = async (req, res) => {
+export const builderProfile = async (req, res) => {
   try {
-    let builder = await Builder.find({ _id: req.params.id });
-    return res.status(200).json({
-      data: builder,
+    const builder = Builder.findOne({ _id: req.user.id }).populate({
+      path: "userId",
+      select: "-password",
     });
+    return res.status(200).json({ builder });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }

@@ -34,4 +34,4 @@ export const isPhoneNumber = (str) =>
  */
 export const getType = (login) =>
   (isPhoneNumber(login) && "phoneNumber") ||
-  (validator.isEmail(login) && "email");
+  (validator.isEmail(login) && "email") || "socialId";

@@ -20,7 +20,8 @@ export const validateAuth = async (req, res, next) => {
     switch (URL) {
       case "signup":
         fullName || errors.push("Please Enter Your Full Name");
-      case "login":
+        break;
+      case "login": break;
       case "signup":
         login || errors.push("Email/PhoneNumber Required");
         password.length >= 6 ||

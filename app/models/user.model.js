@@ -12,7 +12,7 @@ const userSchema = new Schema(
     },
     password: {
       type: String,
-      required: [true, "A password is required to signup"],
+      default: "",
     },
     profileImage: { type: String },
     socialId: { type: String },
@@ -32,6 +32,7 @@ const userSchema = new Schema(
       mode: { type: String },
     },
     adCredit: { type: Number, default: 3 },
+    message: { type: String },
   },
   { timestamps: true, bufferTimeoutMS: 20000 }
 );

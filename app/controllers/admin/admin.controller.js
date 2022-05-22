@@ -78,15 +78,15 @@ export const dashboardCounts = async (req, res) => {
  */
 export const roleUpdate = async (req, res) => {
   try {
-    const { role, status } = req?.body;
+    const { role, status, message } = req?.body;
     console.log(req.params.userId);
     let adCredit = 3;
     let userAds = await Consumer.findOne({
       userId: req.params.userId,
     });
     console.log(userAds);
+    //Checkin if user have any ads as consumer before role update
     if (userAds) {
-      console.log("Inif");
       await roles[role].findOneAndUpdate(
         { userId: req.params.userId },
         {
@@ -95,14 +95,17 @@ export const roleUpdate = async (req, res) => {
         }
       );
     }
-    adCredit = role === "Agent" ? 10 : 3;
-
-    const i = await User.findOneAndUpdate(
+    adCredit = role === "Agent" && status === "verified" ? 10 : 0;
+    await User.findOneAndUpdate(
       { _id: req.params.userId },
-      { role, $inc: { adCredit } },
-      { new: true }
+      {
+        secondaryRole: status === "verified" ? role : null,
+        $inc: { adCredit },
+        message: message,
+      },
+      { upsert: true, new: true }
     );
-    console.log(i);
+
     return res.status(200).json({ message: "Role updated successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -132,9 +135,16 @@ export const getAllAds = async (req, res) => {
  */
 export const changeAdStatus = async (req, res) => {
   try {
-    await Ad.findByIdAndUpdate(req.params.id, {
-      status: req.body.status,
-    });
+    const { status, message } = req?.body;
+    console.log(message);
+    await Ad.findByIdAndUpdate(
+      req.params.id,
+      {
+        status,
+        message,
+      },
+      { upsert: true }
+    );
     return res.status(200).json({ message: `Ad ${req.body.status}` });
   } catch (error) {
     res.status(500).json({ message: error.message });

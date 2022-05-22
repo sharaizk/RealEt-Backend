@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { becomeAnAgent } from "../controllers/agent.controller";
+import { becomeAnAgent, agentProfile } from "../controllers/agent.controller";
 import { userAuth } from "../middlewares/auth.middleware";
 import multer from "multer";
 
@@ -14,5 +14,11 @@ const router = Router();
  * logo
  */
 router.post("/apply", userAuth, upload.single("logo"), becomeAnAgent);
+
+/**
+ * Get Agent ProfileImage
+ *
+ */
+router.get("/profile", userAuth, agentProfile);
 
 export default router;

@@ -67,7 +67,9 @@ export const myPortfolio = async (req, res) => {
   try {
     const userId = req.user._id;
 
-    const portfolio = await Portfolio.find({ userId });
+    const portfolio = await Portfolio.find({ userId }).populate({
+      path: "userId location_data city_data",
+    });
     res.status(200).json({ count: portfolio.length, data: portfolio });
   } catch (error) {
     return res.status(500).json({ message: error.message });

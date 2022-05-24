@@ -24,5 +24,17 @@ const portfolioScheme = new Schema(
   { timestamps: true }
 );
 
+portfolioScheme.virtual("city_data", {
+  ref: "Cities",
+  localField: "city",
+  foreignField: "key",
+  justOne: true,
+});
+portfolioScheme.virtual("location_data", {
+  ref: "Location",
+  localField: "location",
+  foreignField: "key",
+  justOne: true,
+});
 const Portfolio = model("Portfolio", portfolioScheme);
 export default Portfolio;

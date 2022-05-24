@@ -50,14 +50,16 @@ export const addPortfolio = async (req, res) => {
       { $push: { portfolio: portfolio._id } },
       { new: true }
     );
-    const allPortfolios = await Portfolio.find({ userId: req.user_id });
+    const allPortfolios = await Portfolio.find({ userId: req.user._id }).populate({
+      path: "userId location_data city_data",
+    }).sort("-createdAt");
     const totalPortfolios = await Portfolio.countDocuments({
-      userId: req.user_id,
-    }).exec();
+      userId: req.user._id,
+    })
     return res.status(202).json({
       message: "Portfolio Added Successfully",
-      allPortfolios,
-      totalPortfolios,
+      data:allPortfolios,
+      count:totalPortfolios,
     });
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -77,12 +79,12 @@ export const myPortfolio = async (req, res) => {
     const portfolio = await new ApiFeatures(
       Portfolio.find({ userId }).populate({
         path: "userId location_data city_data",
-      }),
+      }).sort("-createdAt"),
       req.query
     ).pagination().query;
-    res.status(200).json({ count: portfolio.length, data: portfolio });
+    const totalPortfolios = await Portfolio.countDocuments({ userId })
+    res.status(200).json({ count: totalPortfolios, data: portfolio });
   } catch (error) {
-    console.log(error)
     return res.status(500).json({ message: error.message });
   }
 };

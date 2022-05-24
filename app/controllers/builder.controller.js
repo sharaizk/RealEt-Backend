@@ -21,7 +21,7 @@ export const getBuilders = async (req, res) => {
 };
 export const builderProfile = async (req, res) => {
   try {
-    const builder = Builder.findOne({ _id: req.user.id }).populate({
+    const builder = await Builder.findOne({ userId: req.user._id }).populate({
       path: "userId",
       select: "-password",
     });

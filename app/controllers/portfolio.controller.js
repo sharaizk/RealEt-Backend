@@ -14,8 +14,16 @@ export const addPortfolio = async (req, res) => {
   try {
     const unlinkFile = promisify(fs.unlink);
     const file = req?.files;
-    const { title, description, type, propertySubType, info, city, location } =
-      req?.body;
+    const {
+      title,
+      description,
+      type,
+      propertySubType,
+      yearBuilt,
+      size,
+      city,
+      location,
+    } = req?.body;
     let photos = [];
     for (let i = 0; i < file.length; i++) {
       const result = await uploadPhoto(file[i]);
@@ -29,7 +37,8 @@ export const addPortfolio = async (req, res) => {
       description,
       type,
       propertySubType,
-      info,
+      yearBuilt,
+      size,
       city,
       location,
     });

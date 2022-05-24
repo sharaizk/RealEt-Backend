@@ -75,7 +75,9 @@ export const myPortfolio = async (req, res) => {
     const userId = req.user._id;
 
     const portfolio = await new ApiFeatures(
-      Portfolio.find({ userId }),
+      Portfolio.find({ userId }).populate({
+        path: "userId location_data city_data",
+      }),
       req.query
     ).pagination().query;
     res.status(200).json({ count: portfolio.length, data: portfolio });

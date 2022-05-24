@@ -21,7 +21,7 @@ const portfolioScheme = new Schema(
     location: { type: Number, ref: "Location" },
     deleteFlag: { type: Boolean, default: false },
   },
-  { timestamps: true }
+  { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
 
 portfolioScheme.virtual("city_data", {

@@ -20,7 +20,6 @@ export const userAuth = async (req, res, next) => {
         .status(401)
         .json({ message: "Login first to access the resource." });
     }
-
     const decoded = verify(token, config.JWT_SECRET);
     const user = await User.findOne({ _id: decoded.id });
     if (!user) {

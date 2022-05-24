@@ -19,8 +19,9 @@ export const agentOrConsumer = async (req, res, next) => {
 };
 export const builderOrConsumer = async (req, res, next) => {
   try {
-    const { role } = req.user;
-    if (role !== "Builder" && role !== "Consumer") {
+    const { secondaryRole } = req.user;
+
+    if (secondaryRole !== "builder" && role !== "builder") {
       return res.status(401).json({ message: "Unauthorized" });
     }
     next();

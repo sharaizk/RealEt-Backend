@@ -3,6 +3,7 @@ import fs from "fs";
 import { promisify } from "util";
 import { uploadPhoto } from "../libraries/multer";
 import { Portfolio } from "../models";
+import {ApiFeatures} from "../utils/ApiFeatures";
 import roles from "../config/roles";
 
 /**
@@ -49,8 +50,14 @@ export const addPortfolio = async (req, res) => {
       { $push: { portfolio: portfolio._id } },
       { new: true }
     );
+    const allPortfolios = await Portfolio.find({ userId: req.user_id });
+    const totalPortfolios = await Portfolio.countDocuments({
+      userId: req.user_id,
+    }).exec();
     return res.status(202).json({
       message: "Portfolio Added Successfully",
+      allPortfolios,
+      totalPortfolios,
     });
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -67,9 +74,13 @@ export const myPortfolio = async (req, res) => {
   try {
     const userId = req.user._id;
 
-    const portfolio = await Portfolio.find({ userId });
+    const portfolio = await new ApiFeatures(
+      Portfolio.find({ userId }),
+      req.query
+    ).pagination().query;
     res.status(200).json({ count: portfolio.length, data: portfolio });
   } catch (error) {
+    console.log(error)
     return res.status(500).json({ message: error.message });
   }
 };

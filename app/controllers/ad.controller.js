@@ -91,16 +91,21 @@ export const postAd = async (req, res) => {
 export const myAds = async (req, res) => {
   try {
     const userId = req.user._id;
-    const { count, status,status2="" } = req.query;
+    const { count, status, status2 = "" } = req.query;
     if (count === "true") {
-      const ListedAdsCount = await Ad.countDocuments({ userId });
+      const ListedAdsCount = await Ad.countDocuments({
+        userId,
+        deleteFlag: false,
+      });
       const NonListedAdsCount = await Ad.countDocuments({
         userId,
         status: { $ne: "approved" },
+        deleteFlag: false,
       });
       const UnApprovedCount = await Ad.countDocuments({
         userId,
         status: "unapproved",
+        deleteFlag: false,
       });
       return res.status(200).json({
         listed: ListedAdsCount,
@@ -110,15 +115,25 @@ export const myAds = async (req, res) => {
     }
     const ads = await new ApiFeatures(
       Ad.find(
-        { userId, status: {$in:[status,status2]},},
-        { title: 1, type: 1, propertyIntent: 1, location: 1, city: 1, status: 1 }
+        { userId, status: { $in: [status, status2] }, deleteFlag: false },
+        {
+          title: 1,
+          type: 1,
+          propertyIntent: 1,
+          location: 1,
+          city: 1,
+          status: 1,
+        }
       ).populate({
         path: "location_data city_data",
       }),
       req.query
-    )
-      .pagination().query
-    const totalAds = await Ad.countDocuments({ userId, status: { $in: [status, status2] } }).exec()
+    ).pagination().query;
+    const totalAds = await Ad.countDocuments({
+      userId,
+      status: { $in: [status, status2] },
+      deleteFlag: false,
+    }).exec();
     res.status(200).json({ data: ads, totalAds: totalAds });
   } catch (error) {
     return res.status(500).json({ message: error.message });

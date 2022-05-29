@@ -7,3 +7,4 @@ export { default as Portfolio } from "./portfolio.model";
 export { default as Cities } from "./cities.model";
 export { default as Location } from "./location.model";
 export { default as Material } from "./material.model";
+export {default as Chat} from './chat.model'

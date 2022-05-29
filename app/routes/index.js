@@ -7,4 +7,5 @@ export { default as builderRoutes } from "./builder.routes";
 export { default as agentRoutes } from "./agent.routes";
 export { default as materialRoutes } from "./material.routes";
 export { default as userRoutes } from "./user.routes";
-export {default as chatRoues} from './chat.routes'
+export { default as chatRoomRoutes } from "./chatroom.routes";
+export { default as messageRoutes } from "./message.routes";

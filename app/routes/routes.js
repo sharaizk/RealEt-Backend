@@ -10,12 +10,14 @@ import {
   agentRoutes,
   materialRoutes,
   userRoutes,
+  chatRoomRoutes,
+  messageRoutes,
 } from ".";
 import {
   myProfile,
   roleSignup,
   userSignup,
-  oAuthSignup
+  oAuthSignup,
 } from "../controllers/auth/auth.controller";
 import { userAuth } from "../middlewares/auth.middleware";
 import { isAdmin } from "../middlewares/roles.middleware";
@@ -42,7 +44,7 @@ router.post(
   roleSignup
 );
 
-router.post("/auth/oauth-signup",oAuthSignup,roleSignup)
+router.post("/auth/oauth-signup", oAuthSignup, roleSignup);
 
 router.get("/auth/my-profile", userAuth, myProfile);
 
@@ -65,4 +67,7 @@ router.use("/material", userAuth, isAdmin, materialRoutes);
 
 router.use("/user", userAuth, userRoutes);
 
+router.use("/chatroom", chatRoomRoutes);
+
+router.use("/message", messageRoutes);
 export default router;

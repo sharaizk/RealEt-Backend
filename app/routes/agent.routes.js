@@ -13,7 +13,21 @@ const router = Router();
  * Office Contact
  * logo
  */
-router.post("/apply", userAuth, upload.single("logo"), becomeAnAgent);
+router.post(
+  "/apply",
+  userAuth,
+  upload.fields([
+    {
+      name: "logo",
+      maxCount: 1,
+    },
+    {
+      name: "cnic",
+      maxCount: 2,
+    },
+  ]),
+  becomeAnAgent
+);
 
 /**
  * Get Agent ProfileImage

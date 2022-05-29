@@ -27,6 +27,20 @@ router.get("/profile", userAuth, builderProfile);
  * Office Contact
  * logo
  */
-router.post("/apply", userAuth, upload.single("logo"), becomeABuilder);
+router.post(
+  "/apply",
+  userAuth,
+  upload.fields([
+    {
+      name: "logo",
+      maxCount: 1,
+    },
+    {
+      name: "cnic",
+      maxCount: 2,
+    },
+  ]),
+  becomeABuilder
+);
 
 export default router;

@@ -13,7 +13,10 @@ export const getChatRoom = async (req, res, next) => {
         },
       ],
     })
-      .populate({ path: "receiver", select: "fullName role secondaryRole" })
+      .populate({
+        path: "receiver",
+        select: "fullName role secondaryRole profileImage",
+      })
       .populate({ path: "sender", select: "fullName role secondaryRole" });
     return res.status(200).json(allChatRooms);
   } catch (error) {

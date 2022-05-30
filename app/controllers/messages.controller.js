@@ -30,6 +30,7 @@ export const SendMessage = async (req, res) => {
       message: message,
       sender: sender,
       receiver: receiver,
+      timeStamp: new Date().getTime(),
     });
     return res.status(200).json(newMessage);
   } catch (error) {

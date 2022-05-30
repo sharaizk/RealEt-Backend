@@ -13,9 +13,17 @@ export const becomeAnAgent = async (req, res) => {
   const unlinkFile = promisify(fs.unlink);
 
   try {
-    const { officeName, officeCoordinates, officeContact } = req?.body;
+    const { officeName, officeCoordinates, officeContact, address } = req?.body;
 
-    const logo = req?.file;
+    let cnicImages = [];
+    const cnic = req?.files.cnic;
+    for (let i = 0; i < cnic.length; i++) {
+      const result = await uploadPhoto(cnic[i]);
+      cnicImages.push(result.Location);
+      await unlinkFile(cnic[i].path);
+    }
+
+    const logo = req?.files.logo[0];
     const result = await uploadPhoto(logo);
     await unlinkFile(logo.path);
 
@@ -24,6 +32,8 @@ export const becomeAnAgent = async (req, res) => {
       officeName,
       officeContact,
       logo: result.Location,
+      cnic: cnicImages,
+      address,
     });
     return res.status(200).json({
       message:

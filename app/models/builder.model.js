@@ -16,6 +16,8 @@ const builderSchema = new Schema(
       enum: ["pending", "verified", "rejected"],
     },
     officeContact: { type: String },
+    address: { type: String },
+    cnic: [{ type: String }],
   },
   { timestamps: true }
 );

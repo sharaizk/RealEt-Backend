@@ -7,7 +7,7 @@ export const GetMessages = async (req, res) => {
     return res.status(401).json({ message: "Please provide chatroom id" });
   try {
     const allMessages = await Message.find({ chatRoom: chatRoom });
-    return res.status(200).json(allMessages);
+    return res.status(200).json({messages:allMessages});
   } catch (error) {
     return res.status(500).json(error);
   }
@@ -18,11 +18,14 @@ export const SendMessage = async (req, res) => {
   if (!chatRoom || !message || !sender || !receiver)
     return res.status(401).json({ message: "Please provide chatroom id" });
   try {
+    const timeStamp = new Date().getTime();
+
     const newMessage = await Message.create({
       chatRoom,
       message,
       sender,
       receiver,
+      timeStamp,
     });
     if (!newMessage)
       return res.status(401).json({ message: "Couldn't send the message" });
@@ -30,7 +33,7 @@ export const SendMessage = async (req, res) => {
       message: message,
       sender: sender,
       receiver: receiver,
-      timeStamp: new Date().getTime(),
+      timeStamp: timeStamp,
     });
     return res.status(200).json(newMessage);
   } catch (error) {

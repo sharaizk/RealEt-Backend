@@ -1,15 +1,14 @@
 import { ChatRoom } from "../models";
-
 export const getChatRoom = async (req, res, next) => {
   try {
-    const { userId } = req.user;
+    const { _id } = req.user;
     const allChatRooms = await ChatRoom.find({
       $or: [
         {
-          user1: userId,
+          receiver: _id,
         },
         {
-          user2: userId,
+          sender: _id,
         },
       ],
     })
@@ -17,7 +16,7 @@ export const getChatRoom = async (req, res, next) => {
         path: "receiver",
         select: "fullName role secondaryRole profileImage",
       })
-      .populate({ path: "sender", select: "fullName role secondaryRole" });
+      .populate({ path: "sender", select: "fullName role secondaryRole profileImage" });
     return res.status(200).json(allChatRooms);
   } catch (error) {
     return res.status(500).json(error);
@@ -30,9 +29,9 @@ export const createChatRoom = async (req, res, next) => {
     return res.status(401).json({ message: "Incomplete data" });
   }
   try {
-    const chatRoomExists = await ChatRoom.find({ sender, receiver });
-    if (chatRoomExists)
-      return res.status(401).json({ message: "Chat Room Already Exists" });
+    // const chatRoomExists = await ChatRoom.find({ sender, receiver });
+    // if (chatRoomExists)
+    //   return res.status(401).json({ message: "Chat Room Already Exists" });
     const newChatRoom = await ChatRoom.create({
       name,
       sender,

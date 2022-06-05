@@ -20,7 +20,10 @@ export const userLogin = async (req, res) => {
         .status(404)
         .json({ message: "User doesn't exist, please Signup First" });
     }
-    if (getType(login) !== 'socialId' && !(await user?.comparePassword(password))) {
+    if (
+      getType(login) !== "socialId" &&
+      !(await user?.comparePassword(password))
+    ) {
       return res.status(401).json({
         status: "Unauthorized",
         message: `${[getType(login)]}/Password does not match`,
@@ -90,20 +93,28 @@ export const userSignup = async (req, res, next) => {
  * @param {Response} res - response object
  */
 
-export const oAuthSignup = async (req, res,next) => {
+export const oAuthSignup = async (req, res, next) => {
   try {
-    const { email, fullName, socialId, socialImage, role = "consumer" } = req.body
-    
-    if (await userExists('email', email)) {
+    const {
+      email,
+      fullName,
+      socialId,
+      socialImage,
+      role = "consumer",
+    } = req.body;
+
+    if (await userExists("email", email)) {
       return res
         .status(400)
         .json({ message: `User already exists on this email, please Login` });
     }
 
-    if (await userExists('socialId', socialId)) {
+    if (await userExists("socialId", socialId)) {
       return res
         .status(400)
-        .json({ message: `User already exists on this Google Account, please Login` });
+        .json({
+          message: `User already exists on this Google Account, please Login`,
+        });
     }
 
     const user = await User.create({
@@ -111,16 +122,16 @@ export const oAuthSignup = async (req, res,next) => {
       email: email,
       socialId: socialId,
       profileImage: socialImage,
-      role:role
-    })
+      role: role,
+    });
     user.save();
-    req.user=user
-    next()
+    req.user = user;
+    next();
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res.status(500).json({ message: error.message });
   }
-}
+};
 
 export const roleSignup = async (req, res) => {
   try {

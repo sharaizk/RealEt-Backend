@@ -4,10 +4,7 @@ const builderSchema = new Schema(
   {
     userId: { type: Types.ObjectId, ref: "User" },
     officeName: { type: String },
-    officeCoordinates: {
-      longitude: { type: Number },
-      latitude: { type: Number },
-    },
+
     logo: { type: String },
     portfolio: [Types.ObjectId],
     status: {
@@ -16,11 +13,25 @@ const builderSchema = new Schema(
       enum: ["pending", "verified", "rejected"],
     },
     officeContact: { type: String },
-    address: { type: String },
     cnic: [{ type: String }],
+    city: { type: Number, ref: "Cities" },
+    location: { type: Number, ref: "Location" },
   },
   { timestamps: true }
 );
+
+builderSchema.virtual("city_data", {
+  ref: "Cities",
+  localField: "city",
+  foreignField: "key",
+  justOne: true,
+});
+builderSchema.virtual("location_data", {
+  ref: "Location",
+  localField: "location",
+  foreignField: "key",
+  justOne: true,
+});
 
 const Builder = model("Builder", builderSchema);
 export default Builder;

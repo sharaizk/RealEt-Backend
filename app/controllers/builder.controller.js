@@ -3,6 +3,7 @@ import { Builder } from "../models";
 import { uploadPhoto } from "../libraries/multer";
 import fs from "fs";
 import { promisify } from "util";
+import tesseract from "node-tesseract-ocr";
 
 /**
  * This Function allows to get all Builders
@@ -22,7 +23,7 @@ export const getBuilders = async (req, res) => {
 export const builderProfile = async (req, res) => {
   try {
     const builder = await Builder.findOne({ userId: req.user._id }).populate({
-      path: "userId",
+      path: "userId location_data city_data",
       select: "-password",
     });
     return res.status(200).json({ builder });
@@ -40,7 +41,7 @@ export const becomeABuilder = async (req, res) => {
   const unlinkFile = promisify(fs.unlink);
 
   try {
-    const { officeName, officeCoordinates, officeContact, address } = req?.body;
+    const { officeName, city, location, officeContact } = req?.body;
 
     let cnicImages = [];
     const cnic = req?.files.cnic;
@@ -60,7 +61,8 @@ export const becomeABuilder = async (req, res) => {
       officeContact,
       logo: result.Location,
       cnic: cnicImages,
-      address,
+      city,
+      location,
     });
     return res.status(200).json({
       message:

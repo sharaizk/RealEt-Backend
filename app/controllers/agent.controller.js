@@ -13,7 +13,7 @@ export const becomeAnAgent = async (req, res) => {
   const unlinkFile = promisify(fs.unlink);
 
   try {
-    const { officeName, officeCoordinates, officeContact, address } = req?.body;
+    const { officeName, city, location, officeContact } = req?.body;
 
     let cnicImages = [];
     const cnic = req?.files.cnic;
@@ -33,7 +33,8 @@ export const becomeAnAgent = async (req, res) => {
       officeContact,
       logo: result.Location,
       cnic: cnicImages,
-      address,
+      city,
+      location,
     });
     return res.status(200).json({
       message:
@@ -46,7 +47,7 @@ export const becomeAnAgent = async (req, res) => {
 export const agentProfile = async (req, res) => {
   try {
     const agent = Agent.findOne({ _id: req.user.id }).populate({
-      path: "userId",
+      path: "userId location_data city_data",
       select: "-password",
     });
     return res.status(200).json({ agent });

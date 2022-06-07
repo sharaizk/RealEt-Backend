@@ -29,6 +29,9 @@ export const SendMessage = async (req, res) => {
     });
     if (!newMessage)
       return res.status(401).json({ message: "Couldn't send the message" });
+    pusher.trigger(`${receiver}`, 'chatroom-message', {
+      chatRoomId:chatRoom
+    })
     pusher.trigger(`${chatRoom}`, "message-received", {
       message: message,
       sender: sender,

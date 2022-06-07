@@ -1,4 +1,6 @@
 import { ChatRoom } from "../models";
+import pusher from "../libraries/pusher";
+
 export const getChatRoom = async (req, res, next) => {
   try {
     const { _id } = req.user;
@@ -12,11 +14,15 @@ export const getChatRoom = async (req, res, next) => {
         },
       ],
     })
+      .sort("-createdAt")
       .populate({
         path: "receiver",
         select: "fullName role secondaryRole profileImage",
       })
-      .populate({ path: "sender", select: "fullName role secondaryRole profileImage" });
+      .populate({
+        path: "sender",
+        select: "fullName role secondaryRole profileImage",
+      });
     return res.status(200).json(allChatRooms);
   } catch (error) {
     return res.status(500).json(error);
@@ -29,9 +35,6 @@ export const createChatRoom = async (req, res, next) => {
     return res.status(401).json({ message: "Incomplete data" });
   }
   try {
-    // const chatRoomExists = await ChatRoom.find({ sender, receiver });
-    // if (chatRoomExists)
-    //   return res.status(401).json({ message: "Chat Room Already Exists" });
     const newChatRoom = await ChatRoom.create({
       name,
       sender,
@@ -39,7 +42,20 @@ export const createChatRoom = async (req, res, next) => {
     });
     if (!newChatRoom)
       return res.status(401).json({ message: "Couldn't create the room" });
-
+    const newRoom = await ChatRoom.findOne({
+      _id: newChatRoom._id,
+    })
+      .populate({
+        path: "receiver",
+        select: "fullName role secondaryRole profileImage",
+      })
+      .populate({
+        path: "sender",
+        select: "fullName role secondaryRole profileImage",
+      });
+    pusher.trigger(`${receiver}`, "new-chatroom", {
+      ...newRoom._doc,
+    });
     return res.status(200).json(newChatRoom);
   } catch (error) {
     return res.status(500).json(error);

@@ -51,7 +51,7 @@ router.get("/auth/my-profile", userAuth, myProfile);
 // Auth Routes for All types of Users
 router.use("/auth", validateLoginType, authRoutes);
 
-router.use("/ads", adRoutes);
+router.use("/properties", adRoutes);
 
 router.use("/portfolio", portfolioRoute);
 

@@ -7,8 +7,15 @@ const chatRoomSchema = new Schema(
       type: Types.ObjectId,
     },
   },
-  { timestamps: true }
+  { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
+
+chatRoomSchema.virtual("receiver_builder", {
+  ref: "Builder",
+  localField: "receiver",
+  foreignField: "_id",
+  justOne: true,
+});
 
 const ChatRooms = model("ChatRooms", chatRoomSchema);
 export default ChatRooms;

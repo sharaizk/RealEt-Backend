@@ -83,7 +83,8 @@ export const searchBuilders = async (req, res) => {
     }
     const searchedBuilders = await new ApiFeatures(
       Builder.find({ city: city, location: location }, { cnic: 0 }).populate({
-        path: "location_data city_data",
+        path: "location_data city_data userId",
+        select:'-password'
       }),
       req.query
     ).pagination().query;

@@ -5,7 +5,6 @@ const chatRoomSchema = new Schema(
     sender: { type: Types.ObjectId, ref: "User" },
     receiver: {
       type: Types.ObjectId,
-      ref: "User",
     },
   },
   { timestamps: true }

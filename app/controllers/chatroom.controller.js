@@ -3,20 +3,21 @@ import pusher from "../libraries/pusher";
 
 export const getChatRoom = async (req, res, next) => {
   try {
-    const { _id } = req.user;
+    const { userId } = req.query;
     const allChatRooms = await ChatRoom.find({
       $or: [
         {
-          receiver: _id,
+          receiver: userId,
         },
         {
-          sender: _id,
+          sender: userId,
         },
       ],
     })
       .sort("-createdAt")
       .populate({
         path: "receiver",
+        model:'User',
         select: "fullName role secondaryRole profileImage",
       })
       .populate({
@@ -48,6 +49,7 @@ export const createChatRoom = async (req, res, next) => {
       .populate({
         path: "receiver",
         select: "fullName role secondaryRole profileImage",
+        model:"Builder"
       })
       .populate({
         path: "sender",

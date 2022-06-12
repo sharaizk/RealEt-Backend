@@ -3,6 +3,7 @@ import {
   getBuilders,
   builderProfile,
   becomeABuilder,
+  searchBuilders,
 } from "../controllers/builder.controller";
 import { userAuth } from "../middlewares/auth.middleware";
 
@@ -42,5 +43,7 @@ router.post(
   ]),
   becomeABuilder
 );
+
+router.get("/search", searchBuilders);
 
 export default router;

@@ -17,7 +17,7 @@ const builderSchema = new Schema(
     city: { type: Number, ref: "Cities" },
     location: { type: Number, ref: "Location" },
   },
-  { timestamps: true }
+  { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
 
 builderSchema.virtual("city_data", {
